@@ -1,13 +1,32 @@
 # DaLogic
 
 
-Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+# SimuLogic
 
-This work is licensed under a
-[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
+---
 
-[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
+## License
 
-[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
-[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
-[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
+This project is licensed under the **Apache License 2.0**.  
+See the [`LICENSE`](LICENSE) file for details.
+
+---
+
+## Attribution
+
+This project is open source and distributed under the Apache License 2.0.
+
+If you redistribute this software (modified or unmodified), especially in
+**binary form or as a GUI application**, **please keep visible attribution to
+the original author** in an **“About”, “Credits”, or similar screen**, including
+the contents of the `NOTICE` file.
+
+This is not a legal requirement of the license, but it is strongly encouraged
+and appreciated.
+
+---
+
+## Legal Notice
+
+See the [`NOTICE`](NOTICE) file for copyright and attribution information.
+vg
