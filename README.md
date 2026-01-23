@@ -1,8 +1,5 @@
 # DaLogic
 
-
-# SimuLogic
-
 ---
 
 ## License
@@ -29,4 +26,3 @@ and appreciated.
 ## Legal Notice
 
 See the [`NOTICE`](NOTICE) file for copyright and attribution information.
-vg
