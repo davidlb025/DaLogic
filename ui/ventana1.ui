@@ -17,18 +17,9 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="25,75">
     <item>
-     <widget class="QScrollArea" name="scrollArea">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QScrollArea" name="menu">
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
@@ -37,15 +28,16 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>473</width>
+         <width>236</width>
          <height>442</height>
         </rect>
        </property>
+       <layout class="QGridLayout" name="gridLayout"/>
       </widget>
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="board">
       <property name="frameShape">
        <enum>QFrame::Shape::StyledPanel</enum>
       </property>
@@ -102,8 +94,29 @@
     <addaction name="actionTutorial"/>
     <addaction name="actionSobre_Nosotros_2"/>
    </widget>
+   <widget class="QMenu" name="menuMod">
+    <property name="title">
+     <string>Mod</string>
+    </property>
+    <addaction name="actionCargar_Tema"/>
+    <addaction name="actionResetear_Tema"/>
+    <addaction name="separator"/>
+    <addaction name="actionCargar_UI"/>
+    <addaction name="actionResetear_UI"/>
+   </widget>
+   <widget class="QMenu" name="menuWidgets">
+    <property name="title">
+     <string>Widgets</string>
+    </property>
+    <addaction name="actionCargar_CI"/>
+    <addaction name="actionGuardar_CI"/>
+    <addaction name="separator"/>
+    <addaction name="actionCrear_Seccion"/>
+   </widget>
    <addaction name="menuArchivo"/>
    <addaction name="menuEditar"/>
+   <addaction name="menuWidgets"/>
+   <addaction name="menuMod"/>
    <addaction name="menuAyuda"/>
   </widget>
   <action name="actionNuevo">
@@ -278,6 +291,69 @@
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+  </action>
+  <action name="actionCargar_Tema">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/theme.svg</normaloff>:/images/icons/theme.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Cargar Tema</string>
+   </property>
+  </action>
+  <action name="actionResetear_Tema">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Resetear Tema</string>
+   </property>
+  </action>
+  <action name="actionCargar_UI">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/UI.svg</normaloff>:/images/icons/UI.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Cargar UI</string>
+   </property>
+  </action>
+  <action name="actionResetear_UI">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Resetear UI</string>
+   </property>
+  </action>
+  <action name="actionCargar_CI">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/IC.svg</normaloff>:/images/icons/IC.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Cargar CI</string>
+   </property>
+  </action>
+  <action name="actionGuardar_CI">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/Create_IC.svg</normaloff>:/images/icons/Create_IC.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Crear CI</string>
+   </property>
+  </action>
+  <action name="actionCrear_Seccion">
+   <property name="icon">
+    <iconset resource="../resources/img.qrc">
+     <normaloff>:/images/icons/Section.svg</normaloff>:/images/icons/Section.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Crear Seccion</string>
    </property>
   </action>
  </widget>

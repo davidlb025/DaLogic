@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>743</width>
-    <height>473</height>
+    <height>500</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>500</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -25,7 +31,7 @@
         <x>0</x>
         <y>0</y>
         <width>723</width>
-        <height>431</height>
+        <height>458</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">

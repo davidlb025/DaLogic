@@ -22,7 +22,8 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(743, 473)
+        Form.resize(743, 500)
+        Form.setMinimumSize(QSize(500, 500))
         self.gridLayout = QGridLayout(Form)
         self.gridLayout.setObjectName(u"gridLayout")
         self.scrollArea = QScrollArea(Form)
@@ -30,7 +31,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaW = QWidget()
         self.scrollAreaW.setObjectName(u"scrollAreaW")
-        self.scrollAreaW.setGeometry(QRect(0, 0, 723, 431))
+        self.scrollAreaW.setGeometry(QRect(0, 0, 723, 458))
         self.gridLayout_2 = QGridLayout(self.scrollAreaW)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.Creditos = QTextBrowser(self.scrollAreaW)

@@ -16,5 +16,11 @@
         <file>icons/save.svg</file>
         <file>icons/save_as.svg</file>
         <file>icons/settings.svg</file>
+        <file>icons/reset.svg</file>
+        <file>icons/theme.svg</file>
+        <file>icons/Create_IC.svg</file>
+        <file>icons/Section.svg</file>
+        <file>icons/IC.svg</file>
+        <file>icons/UI.svg</file>
     </qresource>
 </RCC>

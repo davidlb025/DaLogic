@@ -2,15 +2,85 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QTextBrowser
 import re
-
+import importlib
+import json
+import os
 
 # This file is only for people who want to convert they modified UI to Py.
 import build
 build.convert()
 # This file is only for people who want to convert they modified UI to Py.
 
-from compiled.ui_ventana1 import Ui_MainWindow as MainWindow
-from compiled.ui_credits import Ui_Form as Credit_Form
+
+
+
+def create_config(file_path="config.json"):
+    """
+    Crea un archivo config.json con valores por defecto si no existe.
+    """
+    # Valores por defecto de la configuración
+    config = {
+        "theme":"light",
+        "lang":"es",
+        "main_UI":"ui_ventana1",
+        "credits_UI":"ui_credits"
+    }
+
+    # Verificar si ya existe el archivo
+    if os.path.exists(file_path):
+        return
+
+    with open(file_path, "w") as f:
+        json.dump(config, f, indent=4)
+
+
+def load_UI(ui,default,type):
+    """
+    Load the UI.
+    Use: load_UI("new_ui", "default_ui", 0/1)
+    0 = Ui_MainWindow
+    1 = Ui_Form
+    """
+    if type == 0:
+        type = "Ui_MainWindow"
+    elif type == 1:
+        type = "Ui_Form"
+    else:
+        type = "Ui_MainWindow"
+    try:
+
+        module = importlib.import_module(f"compiled.{ui}")
+        ui_class = getattr(module, type)
+
+    except (ModuleNotFoundError, AttributeError):
+
+        module = importlib.import_module("compiled.ui_ventana1")
+        ui_class = getattr(module, "Ui_MainWindow")
+
+    return ui_class
+
+
+def load_settings(file_path="config.json"):
+    global MainWindow,Credit_Form
+    if not os.path.exists(file_path):
+        create_config(file_path)
+
+    with open(file_path, "r") as f:
+        config = json.load(f)
+
+
+    MainWindow = load_UI(config["main_UI"],"ui_ventana1",0)
+    Credit_Form = load_UI(config["credits_UI"],"ui_credits",1)
+
+
+
+def cargar_tema(nombre="light"):
+    path = f"styles/{nombre}.qss"
+    with open(path, "r", encoding="utf-8") as f:
+        qss = f.read()
+    return qss
+
+
 
 def convertir_links(texto):
     url_regex = r"(https?://[^\s]+)"
@@ -150,7 +220,9 @@ class VentanaInicial(QMainWindow):
 
 
 if __name__ == "__main__":
+    load_settings()
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    app.setStyleSheet(cargar_tema("light"))
     ventana = VentanaInicial()
     sys.exit(app.exec())
