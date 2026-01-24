@@ -1,0 +1,6 @@
+{
+    "theme": "resources/styles/light.qss",
+    "lang": "es",
+    "main_UI": "resources.compiled.ui_ventana1",
+    "credits_UI": "resources.compiled.ui_credits"
+}
