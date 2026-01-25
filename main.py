@@ -1,6 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QTextBrowser, QPushButton
+from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QTextBrowser, QPushButton, QGraphicsScene,QGraphicsTextItem
+from PySide6.QtGui import QColor, QFont
 import re
 import importlib
 import json
@@ -100,8 +101,36 @@ class VentanaInicial(QMainWindow):
         self.ui.close.setFixedWidth(30)
         self.ui.close.clicked.connect(self.cerrar_widg_panel)
         self.ui.splitter.splitterMoved.connect(self.check_widg_panel)
-        self.show()
 
+        self.show()
+        #self.grid_coordenadas()
+
+
+    def load_widgets():
+        self.ui.scrollAreaWidgetContents
+    def grid_coordenadas(self):
+        """Añade texto en cada celda"""
+        grafic_view = self.ui.graphicsView
+        col, fil = grafic_view.get_grid_num()
+        font = QFont("Arial", 8)
+
+        for x in range(col):
+            for y in range(fil):
+                text_item = QGraphicsTextItem(f"({x},{y})")
+                text_item.setFont(font)
+                text_item.setDefaultTextColor(QColor(100, 100, 100))
+                pixel_x = x  * grafic_view.GRID_SIZE
+                pixel_y = y * grafic_view.GRID_SIZE
+
+                text_width  = text_item.boundingRect().width()
+                text_height = text_item.boundingRect().height()
+                ox =  (grafic_view.GRID_SIZE - text_width) / 2
+                oy =  (grafic_view.GRID_SIZE - text_height) / 2
+
+                text_item.setPos(pixel_x + ox, pixel_y + oy)
+
+                    # Añadir
+                grafic_view.scene.addItem(text_item)
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.updt_button()

@@ -18,6 +18,21 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QPushButton" name="Show">
       <property name="enabled">
@@ -88,7 +103,7 @@
           <x>0</x>
           <y>0</y>
           <width>198</width>
-          <height>442</height>
+          <height>460</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout"/>
@@ -107,6 +122,26 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="BoardView" name="graphicsView"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -421,6 +456,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>BoardView</class>
+   <extends>QGraphicsView</extends>
+   <header>board_view</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../img.qrc"/>
  </resources>

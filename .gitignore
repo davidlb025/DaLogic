@@ -86,3 +86,5 @@ CMakeLists.txt.user*
 
 pyproject.toml
 .qtcreator
+.vscode
+.idea

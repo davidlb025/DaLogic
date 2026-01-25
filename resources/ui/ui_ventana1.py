@@ -19,6 +19,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
     QMainWindow, QMenu, QMenuBar, QPushButton,
     QScrollArea, QSizePolicy, QSplitter, QWidget)
+
+from board_view import BoardView
 import rc_img
 
 class Ui_MainWindow(object):
@@ -146,7 +148,9 @@ class Ui_MainWindow(object):
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.Show = QPushButton(self.centralwidget)
         self.Show.setObjectName(u"Show")
         self.Show.setEnabled(True)
@@ -180,7 +184,7 @@ class Ui_MainWindow(object):
         self.menu.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 198, 442))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 198, 460))
         self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout.setObjectName(u"gridLayout")
         self.menu.setWidget(self.scrollAreaWidgetContents)
@@ -190,6 +194,15 @@ class Ui_MainWindow(object):
         self.board.setMinimumSize(QSize(500, 0))
         self.board.setFrameShape(QFrame.Shape.StyledPanel)
         self.board.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_2 = QGridLayout(self.board)
+        self.gridLayout_2.setSpacing(0)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.graphicsView = BoardView(self.board)
+        self.graphicsView.setObjectName(u"graphicsView")
+
+        self.gridLayout_2.addWidget(self.graphicsView, 0, 0, 1, 1)
+
         self.splitter.addWidget(self.board)
 
         self.horizontalLayout.addWidget(self.splitter)
