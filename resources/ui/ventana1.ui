@@ -17,33 +17,97 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="25,75">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QScrollArea" name="menu">
-      <property name="widgetResizable">
+     <widget class="QPushButton" name="Show">
+      <property name="enabled">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>236</width>
-         <height>442</height>
-        </rect>
-       </property>
-       <layout class="QGridLayout" name="gridLayout"/>
-      </widget>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <bold>false</bold>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string notr="true">&gt;&gt;</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoRepeat">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="board">
-      <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
       </property>
+      <widget class="QScrollArea" name="menu">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>198</width>
+          <height>442</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout"/>
+       </widget>
+      </widget>
+      <widget class="QFrame" name="board">
+       <property name="minimumSize">
+        <size>
+         <width>500</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -121,7 +185,7 @@
   </widget>
   <action name="actionNuevo">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/new.svg</normaloff>:/images/icons/new.svg</iconset>
    </property>
    <property name="text">
@@ -133,7 +197,7 @@
   </action>
   <action name="actionGuardar">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/save.svg</normaloff>:/images/icons/save.svg</iconset>
    </property>
    <property name="text">
@@ -145,7 +209,7 @@
   </action>
   <action name="actionGuardar_Como">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/save_as.svg</normaloff>:/images/icons/save_as.svg</iconset>
    </property>
    <property name="text">
@@ -157,7 +221,7 @@
   </action>
   <action name="actionSobre_Nosotros">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/info.svg</normaloff>:/images/icons/info.svg</iconset>
    </property>
    <property name="text">
@@ -169,7 +233,7 @@
   </action>
   <action name="actionAbrir">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/open.svg</normaloff>:/images/icons/open.svg</iconset>
    </property>
    <property name="text">
@@ -181,7 +245,7 @@
   </action>
   <action name="actionCerrar">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/close.svg</normaloff>:/images/icons/close.svg</iconset>
    </property>
    <property name="text">
@@ -190,7 +254,7 @@
   </action>
   <action name="actionSalir">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/exit.svg</normaloff>:/images/icons/exit.svg</iconset>
    </property>
    <property name="text">
@@ -199,7 +263,7 @@
   </action>
   <action name="actionConfiguracion">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/settings.svg</normaloff>:/images/icons/settings.svg</iconset>
    </property>
    <property name="text">
@@ -208,7 +272,7 @@
   </action>
   <action name="actionExportar">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/export.svg</normaloff>:/images/icons/export.svg</iconset>
    </property>
    <property name="text">
@@ -217,7 +281,7 @@
   </action>
   <action name="actionImprimir">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/print.svg</normaloff>:/images/icons/print.svg</iconset>
    </property>
    <property name="text">
@@ -229,7 +293,7 @@
   </action>
   <action name="actionRecientes">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/recent.svg</normaloff>:/images/icons/recent.svg</iconset>
    </property>
    <property name="text">
@@ -238,7 +302,7 @@
   </action>
   <action name="actionCopiar">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditCopy" resource="../resources/img.qrc">
+    <iconset theme="QIcon::ThemeIcon::EditCopy" resource="../img.qrc">
      <normaloff>:/images/icons/copy.svg</normaloff>:/images/icons/copy.svg</iconset>
    </property>
    <property name="text">
@@ -250,7 +314,7 @@
   </action>
   <action name="actionPegar">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/paste.svg</normaloff>:/images/icons/paste.svg</iconset>
    </property>
    <property name="text">
@@ -262,7 +326,7 @@
   </action>
   <action name="actionCortar">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/cut.svg</normaloff>:/images/icons/cut.svg</iconset>
    </property>
    <property name="text">
@@ -274,7 +338,7 @@
   </action>
   <action name="actionTutorial">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/help.svg</normaloff>:/images/icons/help.svg</iconset>
    </property>
    <property name="text">
@@ -283,7 +347,7 @@
   </action>
   <action name="actionSobre_Nosotros_2">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/info.svg</normaloff>:/images/icons/info.svg</iconset>
    </property>
    <property name="text">
@@ -295,7 +359,7 @@
   </action>
   <action name="actionCargar_Tema">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/theme.svg</normaloff>:/images/icons/theme.svg</iconset>
    </property>
    <property name="text">
@@ -304,7 +368,7 @@
   </action>
   <action name="actionResetear_Tema">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
    </property>
    <property name="text">
@@ -313,7 +377,7 @@
   </action>
   <action name="actionCargar_UI">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/UI.svg</normaloff>:/images/icons/UI.svg</iconset>
    </property>
    <property name="text">
@@ -322,7 +386,7 @@
   </action>
   <action name="actionResetear_UI">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
    </property>
    <property name="text">
@@ -331,7 +395,7 @@
   </action>
   <action name="actionCargar_CI">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/IC.svg</normaloff>:/images/icons/IC.svg</iconset>
    </property>
    <property name="text">
@@ -340,7 +404,7 @@
   </action>
   <action name="actionGuardar_CI">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/Create_IC.svg</normaloff>:/images/icons/Create_IC.svg</iconset>
    </property>
    <property name="text">
@@ -349,7 +413,7 @@
   </action>
   <action name="actionCrear_Seccion">
    <property name="icon">
-    <iconset resource="../resources/img.qrc">
+    <iconset resource="../img.qrc">
      <normaloff>:/images/icons/Section.svg</normaloff>:/images/icons/Section.svg</iconset>
    </property>
    <property name="text">
@@ -358,7 +422,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resources/img.qrc"/>
+  <include location="../img.qrc"/>
  </resources>
  <connections/>
 </ui>

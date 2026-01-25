@@ -22,5 +22,6 @@
         <file>icons/Section.svg</file>
         <file>icons/IC.svg</file>
         <file>icons/UI.svg</file>
+        <file>icons/translate.svg</file>
     </qresource>
 </RCC>

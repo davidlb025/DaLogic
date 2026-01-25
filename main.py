@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QTextBrowser
+from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QTextBrowser, QPushButton
 import re
 import importlib
 import json
@@ -10,6 +10,12 @@ import os
 import scripts.build as build
 build.convert()
 # This file is only for people who want to convert their modified UI to Py.
+
+class VentanaConfig(QDialog):
+    def __init__(self, ui_config, parent=None):
+        super().__init__(parent)
+        self.ui = ui_config
+        self.ui.setupUi(self)
 
 class VentanaCreditos(QDialog):
 
@@ -83,9 +89,46 @@ class VentanaInicial(QMainWindow):
     def iniciarUI(self):
         self.ui = self.MainWindow
         self.ui.setupUi(self)
-        self.show()
         app.setStyle("Fusion")
         app.setStyleSheet(self.cargar_tema(self.config["theme"]))
+        self.ui.Show.hide()
+        self.ui.Show.clicked.connect(self.devolver_widg_panel)
+        self.ui.close = QPushButton("X", self.ui.menu.viewport(),flat=True)
+        self.ui.close.move(-10, -10)
+        self.ui.close.raise_()
+        self.ui.close.show()
+        self.ui.close.setFixedWidth(30)
+        self.ui.close.clicked.connect(self.cerrar_widg_panel)
+        self.ui.splitter.splitterMoved.connect(self.check_widg_panel)
+        self.show()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.updt_button()
+
+    def updt_button(self):
+        margen = 1
+        self.ui.close.move(
+                self.ui.menu.viewport().width() - self.ui.close.width() - margen,
+                margen
+        )
+
+    def check_widg_panel(self, pos, index):
+        self.updt_button()
+
+    def cerrar_widg_panel(self):
+        self.ui.menu.hide()
+        self.ui.splitter.setSizes([0, self.ui.splitter.width()])
+        self.ui.Show.show()
+    def devolver_widg_panel(self):
+
+        total_width = self.ui.splitter.width()
+        left_min = self.ui.menu.minimumWidth()
+        right_width = total_width - left_min
+        self.ui.splitter.setSizes([left_min, right_width])
+        self.ui.menu.show()
+        self.ui.Show.hide()
+        self.ui.close.show()
 
     def def_actions(self):
         self.ui.actionAbrir.triggered.connect(self.abrir_archivo)
@@ -111,6 +154,10 @@ class VentanaInicial(QMainWindow):
 
         self.ui.actionTutorial.triggered.connect(self.tutorial)
 
+
+
+
+
     # ================= Configuración =================
 
     def create_config(self, file_path="user/config.json"):
@@ -118,36 +165,26 @@ class VentanaInicial(QMainWindow):
         Crea un archivo config.json con valores por defecto si no existe.
         """
         config = {
-            "theme": "light",
+            "theme": "resources/styles/light.qss",
             "lang": "es",
-            "main_UI": "ui_ventana1",
-            "credits_UI": "ui_credits"
+            "main_UI": "resources.compiled.ui_ventana1",
+            "credits_UI": "resources.compiled.ui_credits",
+            "config_UI": "resources.compiled.ui_config",
         }
-
-        if os.path.exists(file_path):
-            return
 
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-    def load_UI(self, ui, default, type_):
+    def load_UI(self, ui, default, type):
         """
         Load the UI.
-        Use: load_UI("new_ui", "default_ui", 0/1)
-        0 = Ui_MainWindow
-        1 = Ui_Form
-        """
-        if type_ == 0:
-            class_name = "Ui_MainWindow"
-        elif type_ == 1:
-            class_name = "Ui_Form"
-        else:
-            class_name = "Ui_MainWindow"
+        Use: load_UI("new_ui", "default_ui", "")"""
 
         try:
             module = importlib.import_module(ui)
-            ui_class = getattr(module, class_name)
+            ui_class = getattr(module, type)
         except (ModuleNotFoundError, AttributeError):
+            print("Err")
             module = importlib.import_module("resources.compiled.ui_ventana1")
             ui_class = getattr(module, "Ui_MainWindow")
 
@@ -157,16 +194,27 @@ class VentanaInicial(QMainWindow):
         pass
 
     def get_settings(self, file_path="user/config.json"):
+        REQUIRED_KEYS = ["theme", "lang", "main_UI", "credits_UI","config_UI"]
         if not os.path.exists(file_path):
             self.create_config(file_path)
 
-        with open(file_path, "r", encoding="utf-8") as f:
-            self.config = json.load(f)
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                self.config = json.load(f)
+        except json.JSONDecodeError:
+            self.create_config(file_path)
+            self.get_settings(file_path)
 
+        falta = [key for key in REQUIRED_KEYS if key not in self.config]
+
+        if falta:
+            self.create_config(file_path)
+            self.get_settings(file_path)
     def load_settings(self):
         self.get_settings()
-        self.MainWindow = self.load_UI(self.config["main_UI"], "ui_ventana1", 0)()
-        self.Credit_Form = self.load_UI(self.config["credits_UI"], "ui_credits", 1)()
+        self.MainWindow = self.load_UI(self.config["main_UI"], "ui_ventana1", "Ui_MainWindow")()
+        self.Credit_Form = self.load_UI(self.config["credits_UI"], "ui_credits", "Ui_Form")()
+        self.Config_Form = self.load_UI(self.config["config_UI"], "ui_config", "Ui_Form")()
 
     def cargar_tema(self, path="resources/styles/light.qss"):
         with open(path, "r", encoding="utf-8") as f:
@@ -184,7 +232,8 @@ class VentanaInicial(QMainWindow):
         pass
 
     def configure(self):
-        pass
+        self.config_window = VentanaConfig(self.Config_Form, self)
+        self.config_window.exec()
 
     def exportar(self):
         pass
