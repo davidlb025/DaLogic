@@ -1,63 +1,99 @@
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene
-from PySide6.QtCore import Qt, QRectF, QPointF
-from PySide6.QtGui import QPainter, QPen, QColor
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsEllipseItem, QGraphicsLineItem
+from PySide6.QtCore import Qt, QRectF, QPointF, QEvent
+from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent,QBrush
+from PySide6.QtSvgWidgets import QGraphicsSvgItem
 
+from widgets import *
 
 class BoardView(QGraphicsView):
-    GRID_SIZE = 50
-    GRID_X =  100
-    GRID_Y = 100
-    MAP_WIDTH = GRID_SIZE * GRID_X
-    MAP_HEIGHT = GRID_SIZE* GRID_Y
-    # Límites de zoom
-    MIN_ZOOM = 0.20  # 25% del tamaño original
-    MAX_ZOOM = 4.0   # 400% del tamaño original
+    MAP_WIDTH = 4000
+    MAP_HEIGHT = 4000
+
+    MIN_ZOOM = 0.20  # 25%
+    MAX_ZOOM = 4.0   # 400%
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.scene = QGraphicsScene(self)
 
-        # El grid empieza en (0, 0) y termina en el max
         self.scene.setSceneRect(QRectF(0, 0, self.MAP_WIDTH, self.MAP_HEIGHT))
         self.setScene(self.scene)
 
-        self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+        self.center_grid_point()
+        self.last_drag_mode = self.dragMode()
 
-        # zoom actual
         self.zoom_act = 1.0
 
-        # Centrar
-        self.centerOn(self.MAP_WIDTH / 2, self.MAP_HEIGHT / 2)
+    def center_grid_point(self):
+            x = self.MAP_WIDTH / 2
+            y = self.MAP_HEIGHT / 2
+            radius = 5
 
-    def drawBackground(self, painter, rect):
-        """Dibuja la cuadrícula alineada con el grid real"""
-        super().drawBackground(painter, rect)
 
-        pen = QPen(QColor(205,205,205))
-        pen.setWidth(1)
-        pen.setCosmetic(True)
-        painter.setPen(pen)
 
-        start_x = 0
-        end_x = self.MAP_WIDTH
-        start_y = 0
-        end_y = self.MAP_HEIGHT
+            pen = QPen(QColor(128, 128, 128))
+            pen.setWidth(0.5)
 
-        # arr-abaj
-        x = start_x
-        while x <= end_x:
-            painter.drawLine(x, start_y, x, end_y)
-            x += self.GRID_SIZE
+            v_line = QGraphicsLineItem(x, -self.MAP_HEIGHT*100, x, self.MAP_HEIGHT*100)
+            v_line.setPen(pen)
+            #self.scene.addItem(v_line)
 
-        # izq-der
-        y = start_y
-        while y <= end_y:
-            painter.drawLine(start_x, y, end_x, y)
-            y += self.GRID_SIZE
+            h_line = QGraphicsLineItem(-self.MAP_WIDTH*100, y, self.MAP_WIDTH*100, y)
+            h_line.setPen(pen)
+            #self.scene.addItem(h_line)
 
+            point = QGraphicsEllipseItem(
+                x - radius,
+                y - radius,
+                radius * 2,
+                radius * 2
+            )
+
+            point.setBrush(QBrush(QColor(255, 0, 0)))
+            point.setPen(QPen(QColor(255, 0, 0)))
+            self.scene.addItem(point)
+
+            
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MiddleButton:
+            self.last_drag_mode = self.dragMode()
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
+            fake_event = QMouseEvent(
+                QEvent.MouseButtonPress,
+                event.pos(),
+                Qt.LeftButton,
+                Qt.LeftButton,
+                event.modifiers()
+            )
+            super().mousePressEvent(fake_event)
+            return
+
+        if event.button() == Qt.LeftButton:
+            item = self.itemAt(event.pos())
+
+            if not item:
+                self.scene.clearSelection()
+
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+            if event.button() == Qt.MiddleButton:
+                fake_event = QMouseEvent(
+                    QEvent.MouseButtonRelease,
+                    event.pos(),
+                    Qt.LeftButton,
+                    Qt.LeftButton,
+                    event.modifiers()
+                )
+                super().mouseReleaseEvent(fake_event)
+
+                self.setDragMode(self.last_drag_mode)
+                return
+
+            super().mouseReleaseEvent(event)
     def wheelEvent(self, event):
         zoom_factor = 1.25
 
@@ -73,20 +109,3 @@ class BoardView(QGraphicsView):
             if new_zoom >= self.MIN_ZOOM:
                 self.scale(1 / zoom_factor, 1 / zoom_factor)
                 self.zoom_act = new_zoom
-
-    def ajustar(self, pos: QPointF) -> QPointF:
-        x = round(pos.x() / self.GRID_SIZE) * self.GRID_SIZE
-        y = round(pos.y() / self.GRID_SIZE) * self.GRID_SIZE
-        return QPointF(x, y)
-
-    def grid_pos(self, pos: QPointF) -> tuple[int, int]:
-        return (
-            int(pos.x() // self.GRID_SIZE),
-            int(pos.y() // self.GRID_SIZE)
-        )
-
-    def get_grid_num(self) -> tuple[int, int]:
-        return (
-            self.MAP_WIDTH // self.GRID_SIZE,
-            self.MAP_HEIGHT // self.GRID_SIZE
-        )

@@ -18,7 +18,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
     QMainWindow, QMenu, QMenuBar, QPushButton,
-    QScrollArea, QSizePolicy, QSplitter, QWidget)
+    QScrollArea, QSizePolicy, QSpacerItem, QSplitter,
+    QTabWidget, QVBoxLayout, QWidget)
 
 from board_view import BoardView
 import rc_img
@@ -184,9 +185,62 @@ class Ui_MainWindow(object):
         self.menu.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 198, 460))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 370, 460))
         self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout.setObjectName(u"gridLayout")
+        self.tabWidget = QTabWidget(self.scrollAreaWidgetContents)
+        self.tabWidget.setObjectName(u"tabWidget")
+        self.Puertas = QWidget()
+        self.Puertas.setObjectName(u"Puertas")
+        self.Puertas.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.verticalLayout_2 = QVBoxLayout(self.Puertas)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.AND = QPushButton(self.Puertas)
+        self.AND.setObjectName(u"AND")
+
+        self.verticalLayout_2.addWidget(self.AND)
+
+        self.OR = QPushButton(self.Puertas)
+        self.OR.setObjectName(u"OR")
+
+        self.verticalLayout_2.addWidget(self.OR)
+
+        self.XOR = QPushButton(self.Puertas)
+        self.XOR.setObjectName(u"XOR")
+
+        self.verticalLayout_2.addWidget(self.XOR)
+
+        self.NOT = QPushButton(self.Puertas)
+        self.NOT.setObjectName(u"NOT")
+
+        self.verticalLayout_2.addWidget(self.NOT)
+
+        self.NAND = QPushButton(self.Puertas)
+        self.NAND.setObjectName(u"NAND")
+
+        self.verticalLayout_2.addWidget(self.NAND)
+
+        self.NOR = QPushButton(self.Puertas)
+        self.NOR.setObjectName(u"NOR")
+
+        self.verticalLayout_2.addWidget(self.NOR)
+
+        self.INTERRUPTOR = QPushButton(self.Puertas)
+        self.INTERRUPTOR.setObjectName(u"INTERRUPTOR")
+
+        self.verticalLayout_2.addWidget(self.INTERRUPTOR)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer)
+
+        self.tabWidget.addTab(self.Puertas, "")
+        self.tab_2 = QWidget()
+        self.tab_2.setObjectName(u"tab_2")
+        self.tabWidget.addTab(self.tab_2, "")
+
+        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+
         self.menu.setWidget(self.scrollAreaWidgetContents)
         self.splitter.addWidget(self.menu)
         self.board = QFrame(self.splitter)
@@ -218,8 +272,6 @@ class Ui_MainWindow(object):
         self.menuEditar.setObjectName(u"menuEditar")
         self.menuAyuda = QMenu(self.menubar)
         self.menuAyuda.setObjectName(u"menuAyuda")
-        self.menuMod = QMenu(self.menubar)
-        self.menuMod.setObjectName(u"menuMod")
         self.menuWidgets = QMenu(self.menubar)
         self.menuWidgets.setObjectName(u"menuWidgets")
         MainWindow.setMenuBar(self.menubar)
@@ -227,7 +279,6 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuArchivo.menuAction())
         self.menubar.addAction(self.menuEditar.menuAction())
         self.menubar.addAction(self.menuWidgets.menuAction())
-        self.menubar.addAction(self.menuMod.menuAction())
         self.menubar.addAction(self.menuAyuda.menuAction())
         self.menuArchivo.addAction(self.actionNuevo)
         self.menuArchivo.addAction(self.actionAbrir)
@@ -248,11 +299,6 @@ class Ui_MainWindow(object):
         self.menuEditar.addAction(self.actionCortar)
         self.menuAyuda.addAction(self.actionTutorial)
         self.menuAyuda.addAction(self.actionSobre_Nosotros_2)
-        self.menuMod.addAction(self.actionCargar_Tema)
-        self.menuMod.addAction(self.actionResetear_Tema)
-        self.menuMod.addSeparator()
-        self.menuMod.addAction(self.actionCargar_UI)
-        self.menuMod.addAction(self.actionResetear_UI)
         self.menuWidgets.addAction(self.actionCargar_CI)
         self.menuWidgets.addAction(self.actionGuardar_CI)
         self.menuWidgets.addSeparator()
@@ -261,6 +307,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.Show.setDefault(False)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -318,10 +365,18 @@ class Ui_MainWindow(object):
         self.actionCargar_CI.setText(QCoreApplication.translate("MainWindow", u"Cargar CI", None))
         self.actionGuardar_CI.setText(QCoreApplication.translate("MainWindow", u"Crear CI", None))
         self.actionCrear_Seccion.setText(QCoreApplication.translate("MainWindow", u"Crear Seccion", None))
+        self.AND.setText(QCoreApplication.translate("MainWindow", u"AND", None))
+        self.OR.setText(QCoreApplication.translate("MainWindow", u"OR", None))
+        self.XOR.setText(QCoreApplication.translate("MainWindow", u"XOR", None))
+        self.NOT.setText(QCoreApplication.translate("MainWindow", u"NOT", None))
+        self.NAND.setText(QCoreApplication.translate("MainWindow", u"NAND", None))
+        self.NOR.setText(QCoreApplication.translate("MainWindow", u"NOR", None))
+        self.INTERRUPTOR.setText(QCoreApplication.translate("MainWindow", u"INTERRUPTOR", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Puertas), QCoreApplication.translate("MainWindow", u"Basico", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
         self.menuArchivo.setTitle(QCoreApplication.translate("MainWindow", u"Archivo", None))
         self.menuEditar.setTitle(QCoreApplication.translate("MainWindow", u"Editar", None))
         self.menuAyuda.setTitle(QCoreApplication.translate("MainWindow", u"Ayuda", None))
-        self.menuMod.setTitle(QCoreApplication.translate("MainWindow", u"Mod", None))
         self.menuWidgets.setTitle(QCoreApplication.translate("MainWindow", u"Widgets", None))
     # retranslateUi
 

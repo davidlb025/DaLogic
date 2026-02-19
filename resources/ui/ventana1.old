@@ -117,55 +117,48 @@
              <enum>Qt::LayoutDirection::LeftToRight</enum>
             </property>
             <attribute name="title">
-             <string>Basico</string>
+             <string>Puertas Logicas</string>
             </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0,0">
+            <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0">
              <item>
-              <widget class="QPushButton" name="AND">
+              <widget class="QPushButton" name="pushButton">
                <property name="text">
                 <string>AND</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="OR">
+              <widget class="QPushButton" name="pushButton_2">
                <property name="text">
                 <string>OR</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="XOR">
+              <widget class="QPushButton" name="pushButton_3">
                <property name="text">
                 <string>XOR</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="NOT">
+              <widget class="QPushButton" name="pushButton_4">
                <property name="text">
                 <string>NOT</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="NAND">
+              <widget class="QPushButton" name="pushButton_5">
                <property name="text">
                 <string>NAND</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="NOR">
+              <widget class="QPushButton" name="pushButton_6">
                <property name="text">
                 <string>NOR</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="INTERRUPTOR">
-               <property name="text">
-                <string>INTERRUPTOR</string>
                </property>
               </widget>
              </item>
@@ -278,6 +271,16 @@
     <addaction name="actionTutorial"/>
     <addaction name="actionSobre_Nosotros_2"/>
    </widget>
+   <widget class="QMenu" name="menuMod">
+    <property name="title">
+     <string>Mod</string>
+    </property>
+    <addaction name="actionCargar_Tema"/>
+    <addaction name="actionResetear_Tema"/>
+    <addaction name="separator"/>
+    <addaction name="actionCargar_UI"/>
+    <addaction name="actionResetear_UI"/>
+   </widget>
    <widget class="QMenu" name="menuWidgets">
     <property name="title">
      <string>Widgets</string>
@@ -290,6 +293,7 @@
    <addaction name="menuArchivo"/>
    <addaction name="menuEditar"/>
    <addaction name="menuWidgets"/>
+   <addaction name="menuMod"/>
    <addaction name="menuAyuda"/>
   </widget>
   <action name="actionNuevo">

@@ -23,5 +23,6 @@
         <file>icons/IC.svg</file>
         <file>icons/UI.svg</file>
         <file>icons/translate.svg</file>
+        <file>icons/AND.svg</file>
     </qresource>
 </RCC>

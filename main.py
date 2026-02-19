@@ -1,12 +1,13 @@
 # This Python file uses the following encoding: utf-8
 import sys
+import os
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QTextBrowser, QPushButton, QGraphicsScene,QGraphicsTextItem
 from PySide6.QtGui import QColor, QFont
 import re
 import importlib
 import json
-import os
-
+import widgets.widgets as wdg
+import widgets.graphics as gra
 # This file is only for people who want to convert their modified UI to Py.
 import scripts.build as build
 build.convert()
@@ -88,6 +89,10 @@ class VentanaInicial(QMainWindow):
         self.def_actions()
 
     def iniciarUI(self):
+        self.widgets = {}
+        self.conectors = {}
+        self.graphics = {}
+        self.next_id=0
         self.ui = self.MainWindow
         self.ui.setupUi(self)
         app.setStyle("Fusion")
@@ -101,36 +106,32 @@ class VentanaInicial(QMainWindow):
         self.ui.close.setFixedWidth(30)
         self.ui.close.clicked.connect(self.cerrar_widg_panel)
         self.ui.splitter.splitterMoved.connect(self.check_widg_panel)
-
+        self.def_buttons()
         self.show()
-        #self.grid_coordenadas()
 
+    def def_buttons(self):
+        self.ui.AND.clicked.connect(self.crear_and)
 
-    def load_widgets():
-        self.ui.scrollAreaWidgetContents
-    def grid_coordenadas(self):
-        """Añade texto en cada celda"""
-        grafic_view = self.ui.graphicsView
-        col, fil = grafic_view.get_grid_num()
-        font = QFont("Arial", 8)
+    def crear_and(self):
+        and_widg = wdg.AND(self.next_id)
+        and_graph = gra.Graphic(
+            widg=and_widg,
+            svg_path="resources/icons/AND.svg",
+            scale=0.2
+        )
 
-        for x in range(col):
-            for y in range(fil):
-                text_item = QGraphicsTextItem(f"({x},{y})")
-                text_item.setFont(font)
-                text_item.setDefaultTextColor(QColor(100, 100, 100))
-                pixel_x = x  * grafic_view.GRID_SIZE
-                pixel_y = y * grafic_view.GRID_SIZE
+        self.ui.graphicsView.scene.addItem(and_graph)
 
-                text_width  = text_item.boundingRect().width()
-                text_height = text_item.boundingRect().height()
-                ox =  (grafic_view.GRID_SIZE - text_width) / 2
-                oy =  (grafic_view.GRID_SIZE - text_height) / 2
+        and_graph.setPos(
+            self.ui.graphicsView.scene.width() / 2,
+            self.ui.graphicsView.scene.height() / 2
+        )
 
-                text_item.setPos(pixel_x + ox, pixel_y + oy)
+        self.widgets[self.next_id] = and_widg
+        self.graphics[self.next_id] = and_graph
 
-                    # Añadir
-                grafic_view.scene.addItem(text_item)
+        self.next_id += 1
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.updt_button()
