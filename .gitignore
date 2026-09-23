@@ -88,3 +88,6 @@ pyproject.toml
 .qtcreator
 .vscode
 .idea
+.venv-release
+/dist/
+DaLogic.spec

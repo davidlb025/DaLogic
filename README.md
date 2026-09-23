@@ -1,6 +1,7 @@
-# DaLogic — Release 1.0
+# DaLogic — Release v1.0.0
 
 DaLogic es un editor gráfico de circuitos lógicos digitales. Permite diseñar y simular circuitos, calcular tablas de verdad y guardar circuitos integrados (CI) reutilizables. La interfaz está en español y los proyectos se guardan en formatos JSON propios.
+
 
 ## Funciones
 
