@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>icons/close.svg</file>
+        <file>icons/copy.svg</file>
+        <file>icons/cut.svg</file>
+        <file>icons/exit.svg</file>
+        <file>icons/export.svg</file>
+        <file>icons/help.svg</file>
+        <file>icons/import.svg</file>
+        <file>icons/info.svg</file>
+        <file>icons/new.svg</file>
+        <file>icons/open.svg</file>
+        <file>icons/paste.svg</file>
+        <file>icons/print.svg</file>
+        <file>icons/recent.svg</file>
+        <file>icons/save.svg</file>
+        <file>icons/save_as.svg</file>
+        <file>icons/settings.svg</file>
+        <file>icons/reset.svg</file>
+        <file>icons/theme.svg</file>
+        <file>icons/Create_IC.svg</file>
+        <file>icons/Section.svg</file>
+        <file>icons/IC.svg</file>
+        <file>icons/UI.svg</file>
+        <file>icons/translate.svg</file>
+        <file>icons/AND.svg</file>
+    </qresource>
+</RCC>

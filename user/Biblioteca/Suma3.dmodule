@@ -1,0 +1,106 @@
+{
+  "format": "DaLogic module",
+  "version": 2,
+  "name": "Suma3",
+  "inputs": 3,
+  "outputs": 2,
+  "delay_ms": 0,
+  "truth_table": [
+    {
+      "inputs": [
+        false,
+        false,
+        false
+      ],
+      "outputs": [
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        false
+      ],
+      "outputs": [
+        false,
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        false
+      ],
+      "outputs": [
+        false,
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        false
+      ],
+      "outputs": [
+        true,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        false,
+        true
+      ],
+      "outputs": [
+        false,
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        true
+      ],
+      "outputs": [
+        true,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        true
+      ],
+      "outputs": [
+        true,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        true
+      ],
+      "outputs": [
+        true,
+        true
+      ],
+      "time_ms": 0
+    }
+  ]
+}

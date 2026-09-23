@@ -1,0 +1,18 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- marco -->
+  <rect x="30" y="30" width="140" height="140" rx="15"
+        fill="none" stroke="black" stroke-width="3"/>
+
+  <!-- interruptor (basculante inclinado) -->
+  <path d="
+    M 70 60
+    L 130 50
+    L 130 140
+    L 70 150
+    Z
+  "
+  fill="none"
+  stroke="black"
+  stroke-width="3"
+  stroke-linejoin="round"/>
+</svg>
