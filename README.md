@@ -1,7 +1,10 @@
-# DaLogic — Release v1.0.0
+# DaLogic — v1.1.0
 
 DaLogic es un editor gráfico de circuitos lógicos digitales. Permite diseñar y simular circuitos, calcular tablas de verdad y guardar circuitos integrados (CI) reutilizables. La interfaz está en español y los proyectos se guardan en formatos JSON propios.
 
+Consulta [Tiempo, relojes y realimentación](docs/tiempo-y-realimentacion.md) para entender los intervalos del reloj, los retardos de señal y los circuitos con memoria.
+
+[Changelog](CHANGELOG.md)
 
 ## Funciones
 
@@ -26,6 +29,7 @@ DaLogic es un editor gráfico de circuitos lógicos digitales. Permite diseñar 
 | NAND / NOR | Resultado invertido de AND / OR; admiten 2–8 entradas. |
 | Interruptor | Fuente persistente; doble clic alterna su estado. |
 | Botón momentáneo | Activo mientras se mantiene pulsado. |
+| Reloj | Fuente de onda cuadrada; clic derecho configura el intervalo entre cambios (10–60.000 ms, 500 ms por defecto). Pausa o reanuda todos los relojes desde la barra superior o con F6. |
 | Retardo | Retrasa la propagación durante el tiempo configurado, en milisegundos. |
 | Bombilla | Se enciende con señal activa; permite editar retardo y color encendido. |
 | Display de 7 segmentos | Muestra los segmentos a–g conectados; permite editar retardo y color de cada segmento. |
@@ -37,7 +41,9 @@ Las puertas lógicas admiten como mínimo dos entradas, excepto NOT, que tiene u
 
 Los cambios se propagan por los cables y pueden atravesar componentes con retardo. Los interruptores mantienen el estado; los botones momentáneos vuelven a apagarse al soltarlos.
 
-La tabla de verdad del circuito completo utiliza interruptores y botones conectados como entradas, y bombillas y displays conectados como salidas. Permite asignar manualmente un número único a cada columna. Las combinaciones avanzan en orden binario; por ejemplo, con tres entradas: 000, 001, 010, 011, 100, 101, 110, 111.
+Para depurar una secuencia, pausa y reanuda todos los relojes con **Pausar relojes** en la barra superior o con **F6**. Si una realimentación combinacional oscila o entra en un bucle, DaLogic detiene la simulación, pausa los relojes y muestra un aviso para revisar las conexiones.
+
+La tabla de verdad del circuito completo utiliza interruptores, botones y relojes conectados como entradas, y bombillas y displays conectados como salidas. Permite asignar manualmente un número único a cada columna. Las combinaciones avanzan en orden binario; por ejemplo, con tres entradas: 000, 001, 010, 011, 100, 101, 110, 111.
 
 - Las bombillas producen 0 o 1.
 - Los displays producen los índices de segmentos encendidos (por ejemplo, 012 o 031); un guion indica que no hay segmentos activos.
@@ -50,7 +56,9 @@ El comando está en Widgets → Calcular tabla de verdad (Ctrl+Mayús+F).
 
 ### CI y biblioteca
 
-Selecciona componentes y usa Crear CI para generar un módulo reutilizable. El archivo registra explícitamente cada combinación de entradas, sus salidas y el tiempo de respuesta; no guarda las salidas como un entero empaquetado. El retardo añadido al CI se suma al de cada respuesta.
+Selecciona componentes y usa Crear CI para generar un módulo reutilizable. Los circuitos combinacionales guardan sus combinaciones de entradas, salidas y tiempos de respuesta. Si la selección tiene realimentación, se crea un módulo secuencial: el archivo .dmodule conserva el circuito interno (componentes, conexiones y estado inicial), en vez de intentar reducirlo a una tabla de verdad. Cada instancia mantiene su propio estado, y los proyectos guardan ese estado al cerrarse para recuperarlo al cargarse. Los módulos secuenciales no tienen una tabla de verdad combinacional válida porque sus salidas dependen de señales anteriores.
+
+Para crear uno, selecciona el circuito completo, con sus interruptores o botones como entradas y sus bombillas como salidas, y usa Crear CI. Se conservan las puertas y módulos conectados dentro de la selección; cada instancia del CI mantiene una memoria independiente.
 
 La pestaña CI agrupa los módulos en:
 
@@ -64,7 +72,8 @@ Los números de puerto empiezan en cero, no se repiten en entradas o salidas y o
 
 - Guarda y abre proyectos .dalogic (JSON); también se admiten archivos JSON compatibles.
 - Se conservan componentes, posiciones, estados, propiedades, cables, colores, nexos, puentes, extremos y rótulos de sección.
-- Los módulos .dmodule se guardan como JSON. Se admiten las versiones 1 y 2; los módulos antiguos se normalizan al cargarlos.
+- Los módulos `.dmodule` se guardan como JSON. El formato **1** almacena CI combinacionales mediante filas explícitas de entradas, salidas y tiempo de respuesta. El formato **1.1** almacena el esquema literal del CI secuencial, incluidas sus conexiones y estado inicial; DaLogic 1.0 no puede leer este formato nuevo.
+- Se eliminó el lector del sistema de pruebas anterior a la primera versión del repositorio. Sus archivos pueden indicar `"version": 1`, pero guardan la tabla como una lista plana de enteros que empaquetan varias salidas (por ejemplo, `[0, 1, 1, 2, ...]`). Esa codificación no es el formato publicado 1 y ya no se carga. Los módulos combinacionales publicados siguen funcionando.
 - Exporta el circuito como PNG con fondo transparente, PDF o SVG.
 - Exporta tablas como PNG, PDF, SVG, XLSX o CSV separado por punto y coma.
 - Los proyectos recientes se guardan en user/recent.json y preferencias como el tema y el idioma en user/config.json.
@@ -112,23 +121,18 @@ En Windows también puedes usar py main.py.
 1. Añade componentes desde Básico; usa la pestaña CI para insertar módulos reutilizables.
 2. Arrástralos al tablero y conecta salidas con entradas. Inicia el cable en un puerto y termínalo en un puerto, nexo o extremo válido.
 3. Haz doble clic en interruptores y mantén pulsados los botones momentáneos.
-4. Usa los editores contextuales para configurar retardos, colores, cantidad de puertos o numeración, según el componente.
-5. Guarda el proyecto en .dalogic. Para reutilizar una selección entre proyectos, créala como CI.
-6. Calcula la tabla desde Widgets → Calcular tabla de verdad. Exporta el circuito desde Archivo → Exportar y la tabla desde su ventana.
+4. Usa **Pausar relojes** o F6 para detener la señal periódica mientras inspeccionas el circuito.
+5. Usa los editores contextuales para configurar retardos, colores, cantidad de puertos o numeración, según el componente.
+6. Guarda el proyecto en .dalogic. Para reutilizar una selección entre proyectos, créala como CI.
+7. Calcula la tabla desde Widgets → Calcular tabla de verdad. Exporta el circuito desde Archivo → Exportar y la tabla desde su ventana.
 
 ## Deshacer y rehacer
 
-Ctrl+Z deshace el último cambio del circuito y Ctrl+Y lo rehace. El historial incluye los componentes, conexiones, posiciones, nexos, propiedades y estados guardados por el proyecto, y conserva hasta 100 pasos. Abrir o crear un proyecto inicia un historial nuevo. Deshacer no escribe el archivo del proyecto; guarda los cambios cuando vuelvas a usar Guardar.
-
-## Carpetas predeterminadas
-
-- Los proyectos nuevos se abren y guardan inicialmente en Proyectos.
-- Las exportaciones de circuitos y tablas proponen la carpeta Exports.
-- Los circuitos integrados se guardan en user/Biblioteca. Si había una biblioteca anterior llamada user/Biblioteca de CI, sus módulos se trasladan a la carpeta nueva; si un nombre ya existe, se conserva el archivo anterior con un sufijo.
+Ctrl+Z deshace el último cambio del circuito y Ctrl+Y lo rehace. El historial incluye los componentes, conexiones, posiciones, nexos, propiedades y estados guardados por el proyecto, y conserva hasta 100 pasos. Al deshacer o rehacer se reconstruyen las conexiones y se recalculan las activaciones de todo el circuito. Eliminar un componente o cable, incluida la acción Cortar (Ctrl+X), también recalcula las señales para que no queden activaciones obsoletas. Abrir o crear un proyecto inicia un historial nuevo. Deshacer no escribe el archivo del proyecto; guarda los cambios cuando vuelvas a usar Guardar.
 
 ## Idiomas
 
-La aplicación ofrece un selector de idioma en la barra superior. Los catálogos están en user/Idiomas y se cargan desde archivos JSON. En el primer inicio se amplía es.json con las claves de texto de la interfaz.
+La aplicación ofrece un selector de idioma en la barra superior. Los catálogos están en user/Idiomas y se cargan desde archivos JSON. Al iniciar, DaLogic añade a es.json las cadenas visibles de la interfaz que falten y conserva en cada catálogo solo las claves que corresponden a texto de la interfaz.
 
 Para añadir un idioma, copia user/Idiomas/es.json a un archivo nuevo, por ejemplo en.json. Cambia el nombre mostrado y el código, y sustituye los valores de translations por las traducciones correspondientes. Las claves son las frases originales en español; cualquier frase que no traduzcas seguirá apareciendo en español. Guarda el archivo y reinicia DaLogic para que aparezca en el selector.
 

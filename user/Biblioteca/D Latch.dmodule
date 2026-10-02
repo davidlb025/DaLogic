@@ -1,0 +1,189 @@
+{
+  "format": "DaLogic module",
+  "version": 1.1,
+  "name": "D Latch",
+  "inputs": 2,
+  "outputs": 2,
+  "delay_ms": 0,
+  "input_numbers": [
+    0,
+    1
+  ],
+  "output_numbers": [
+    0,
+    1
+  ],
+  "stateful_circuit": {
+    "version": 1,
+    "components": [
+      {
+        "id": 0,
+        "type": "NOR",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 1,
+        "type": "NOR",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 9,
+        "type": "AND",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 10,
+        "type": "AND",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 14,
+        "type": "NOT",
+        "inputs": 1,
+        "outputs": 1,
+        "delay_ms": 0
+      }
+    ],
+    "connections": [
+      {
+        "source": 14,
+        "output": 0,
+        "destination": 9,
+        "input": 0
+      },
+      {
+        "source": 10,
+        "output": 0,
+        "destination": 0,
+        "input": 1
+      },
+      {
+        "source": 0,
+        "output": 0,
+        "destination": 1,
+        "input": 1
+      },
+      {
+        "source": 9,
+        "output": 0,
+        "destination": 1,
+        "input": 0
+      },
+      {
+        "source": 1,
+        "output": 0,
+        "destination": 0,
+        "input": 0
+      }
+    ],
+    "input_bindings": [
+      {
+        "input": 0,
+        "targets": [
+          {
+            "node": 9,
+            "port": 1
+          },
+          {
+            "node": 10,
+            "port": 0
+          }
+        ]
+      },
+      {
+        "input": 1,
+        "targets": [
+          {
+            "node": 14,
+            "port": 0
+          },
+          {
+            "node": 10,
+            "port": 1
+          }
+        ]
+      }
+    ],
+    "output_bindings": [
+      {
+        "output": 0,
+        "sources": [
+          {
+            "node": 0,
+            "port": 0
+          }
+        ]
+      },
+      {
+        "output": 1,
+        "sources": [
+          {
+            "node": 1,
+            "port": 0
+          }
+        ]
+      }
+    ],
+    "initial_state": {
+      "initialized": true,
+      "inputs": [
+        false,
+        false
+      ],
+      "nodes": {
+        "14": {
+          "enter": [
+            false
+          ],
+          "exit": [
+            true
+          ]
+        },
+        "10": {
+          "enter": [
+            false,
+            false
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "0": {
+          "enter": [
+            false,
+            false
+          ],
+          "exit": [
+            true
+          ]
+        },
+        "9": {
+          "enter": [
+            true,
+            false
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "1": {
+          "enter": [
+            false,
+            true
+          ],
+          "exit": [
+            false
+          ]
+        }
+      }
+    }
+  }
+}

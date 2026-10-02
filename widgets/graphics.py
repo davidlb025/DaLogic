@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QPointF, QRectF
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont, QPainter
 import json
+import copy
 import math
 from pathlib import Path
 
@@ -933,6 +934,7 @@ class LogicGateGraphic(Graphic):
         is_switch = kind == "SWITCH"
         is_delay = kind == "DELAY"
         is_button = kind == "BUTTON"
+        is_clock = kind == "CLOCK"
         view = self.scene().views()[0] if self.scene() and self.scene().views() else None
         dark = bool(view and getattr(view, "theme_mode", "dark") == "dark")
         if dark:
@@ -953,18 +955,34 @@ class LogicGateGraphic(Graphic):
                 fill, accent = (QColor(98, 59, 34), QColor(255, 190, 130)) if dark else (QColor(255, 238, 222), QColor(168, 91, 37))
             else:
                 fill, accent = (QColor(55, 45, 41), QColor(230, 174, 137)) if dark else (QColor(250, 244, 239), QColor(168, 111, 75))
+        elif is_clock:
+            if self.widg.state:
+                fill, accent = (QColor(25, 78, 82), QColor(81, 224, 217)) if dark else (QColor(222, 248, 246), QColor(29, 137, 143))
+            else:
+                fill, accent = (QColor(42, 57, 72), QColor(132, 177, 195)) if dark else (QColor(235, 245, 248), QColor(72, 127, 145))
 
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setPen(QPen(accent, 2.2, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
         painter.setBrush(QBrush(fill))
 
-        if is_switch or is_delay or is_button:
+        if is_switch or is_delay or is_button or is_clock:
             painter.drawRoundedRect(QRectF(-44, -26, 88, 52), 12, 12)
             if is_switch:
                 painter.setPen(QPen(QColor(238, 247, 255), 2.5, Qt.SolidLine, Qt.RoundCap))
                 painter.drawLine(-20, 12, 18 if self.widg.state else -2, -12)
                 painter.setBrush(QBrush(accent))
                 painter.drawEllipse(QPointF(20 if self.widg.state else -20, 0), 7, 7)
+            elif is_clock:
+                painter.setPen(QPen(accent, 3.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                wave = QPainterPath(QPointF(-25, 9))
+                wave.lineTo(-15, 9)
+                wave.lineTo(-15, -9)
+                wave.lineTo(-2, -9)
+                wave.lineTo(-2, 9)
+                wave.lineTo(11, 9)
+                wave.lineTo(11, -9)
+                wave.lineTo(25, -9)
+                painter.drawPath(wave)
             else:
                 painter.setPen(QPen(QColor(238, 225, 255), 2.3, Qt.SolidLine, Qt.RoundCap))
                 painter.drawLine(-22, 0, 16, 0)
@@ -1005,6 +1023,8 @@ class LogicGateGraphic(Graphic):
 
         if is_switch:
             label = "ON" if self.widg.state else "OFF"
+        elif is_clock:
+            label = "CLK"
         elif is_delay:
             label = "Δt"
         elif is_button:
@@ -1649,13 +1669,13 @@ class ConfigDialog(QDialog):
         self.graph = graphic
         self.widg  = graphic.widg
 
-        from widgets.widgets import Module, Switch, Button, Bulb, Display, Delay
+        from widgets.widgets import Module, Switch, Button, Clock, Bulb, Display, Delay
         if isinstance(self.widg, Module):
             component_name = self.widg.name
         else:
             component_name = next((label for kind, label in (
                 (Switch, "Interruptor"), (Button, "Botón"), (Bulb, "Bombilla"),
-                (Display, "Display"), (Delay, "RETARDO"))
+                (Clock, "Reloj"), (Display, "Display"), (Delay, "RETARDO"))
                 if isinstance(self.widg, kind)), type(self.widg).__name__)
         self.setWindowTitle(f"Editar {component_name} {self.widg.id}")
         self.setMinimumWidth(340)
@@ -1673,14 +1693,24 @@ class ConfigDialog(QDialog):
             row.addWidget(self.sp_in)
             lay.addLayout(row)
 
-        delay_layout = QHBoxLayout()
-        delay_layout.addWidget(QLabel("Retardo de señal (ms):"))
-        self.sp_delay = QSpinBox(self)
-        self.sp_delay.setRange(0, 10000)
-        self.sp_delay.setValue(self.widg.delay_ms)
-        self.sp_delay.setSuffix(" ms")
-        delay_layout.addWidget(self.sp_delay)
-        lay.addLayout(delay_layout)
+        if isinstance(self.widg, Clock):
+            interval_layout = QHBoxLayout()
+            interval_layout.addWidget(QLabel("Intervalo de cambio:"))
+            self.sp_clock_interval = QSpinBox(self)
+            self.sp_clock_interval.setRange(10, 60000)
+            self.sp_clock_interval.setValue(self.widg.interval_ms)
+            self.sp_clock_interval.setSuffix(" ms")
+            interval_layout.addWidget(self.sp_clock_interval)
+            lay.addLayout(interval_layout)
+        else:
+            delay_layout = QHBoxLayout()
+            delay_layout.addWidget(QLabel("Retardo de señal (ms):"))
+            self.sp_delay = QSpinBox(self)
+            self.sp_delay.setRange(0, 10000)
+            self.sp_delay.setValue(self.widg.delay_ms)
+            self.sp_delay.setSuffix(" ms")
+            delay_layout.addWidget(self.sp_delay)
+            lay.addLayout(delay_layout)
 
         self.segment_color_fields = []
         if isinstance(self.widg, Display):
@@ -1815,10 +1845,14 @@ class ConfigDialog(QDialog):
             path = Path(save).with_suffix(".dmodule")
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
+            stateful_circuit = copy.deepcopy(self.widg.stateful_circuit)
+            if stateful_circuit:
+                stateful_circuit["initial_state"] = self.widg.export_stateful_state()
             definition = module_definition(
                 self.widg.name, len(self.widg.enter), len(self.widg.exit),
                 self.widg.truth_table, self.widg.delay_ms,
-                self.widg.input_numbers, self.widg.output_numbers)
+                self.widg.input_numbers, self.widg.output_numbers,
+                stateful_circuit)
             path.write_text(json.dumps(definition, ensure_ascii=False, indent=2),
                             encoding="utf-8")
         except (OSError, ValueError, TypeError) as exc:
@@ -1839,12 +1873,18 @@ class ConfigDialog(QDialog):
         QMessageBox.information(self, "CI guardado", f"Se guardó {path.name}.")
 
     def _apply_config(self):
-        from widgets.widgets import Module
+        from widgets.widgets import Module, Display, Clock
         if isinstance(self.widg, Module):
             self._apply_module_ports()
         elif self.widg.can_set_enter():
             self.widg.set_enter(self.sp_in.value())
-        self.widg.set_delay(self.sp_delay.value())
+        if isinstance(self.widg, Clock):
+            self.widg.set_interval(self.sp_clock_interval.value())
+            scene = self.graph.scene()
+            if scene and scene.views():
+                scene.views()[0].sync_clock_timers()
+        else:
+            self.widg.set_delay(self.sp_delay.value())
         if isinstance(self.widg, Display):
             self.widg.segment_colors = [picker.color.name() for picker in self.segment_color_fields]
             self.graph._refresh_look()

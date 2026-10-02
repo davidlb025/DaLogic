@@ -1,6 +1,6 @@
 {
   "format": "DaLogic module",
-  "version": 2,
+  "version": 1,
   "name": "Suma3",
   "inputs": 3,
   "outputs": 2,

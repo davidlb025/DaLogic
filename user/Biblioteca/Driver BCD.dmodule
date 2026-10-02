@@ -1,6 +1,6 @@
 {
   "format": "DaLogic module",
-  "version": 2,
+  "version": 1,
   "name": "Driver BCD",
   "inputs": 10,
   "outputs": 7,

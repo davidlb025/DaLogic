@@ -91,3 +91,4 @@ pyproject.toml
 .venv-release
 /dist/
 DaLogic.spec
+ROADMAP.md

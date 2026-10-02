@@ -19,14 +19,14 @@ from collections import deque
 
 from PySide6.QtWidgets import (
     QGraphicsView, QGraphicsScene, QGraphicsEllipseItem,
-    QGraphicsLineItem, QGraphicsItem
+    QGraphicsLineItem, QGraphicsItem, QMessageBox
 )
 from PySide6.QtCore import Qt, QRectF, QPointF, QEvent, QTimer
 from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent, QBrush, QKeyEvent
 
 from widgets.graphics import (
     Port, Wire, Graphic, Junction, WireEndpoint, MidPoint,
-    COLOR_WIRE_OFF, COLOR_WIRE_ON
+    COLOR_WIRE_OFF, COLOR_WIRE_ON, translate_text
 )
 
 SNAP_R = 14
@@ -66,7 +66,11 @@ class BoardView(QGraphicsView):
         self._signal_queue: deque = deque()
         self._processing_signals = False
         self._signal_steps = 0
+        self._signal_visits: dict[tuple, int] = {}
+        self._signal_halted = False
         self._input_drivers: dict[tuple[object, int], dict[object, bool]] = {}
+        self._clock_timers: dict[object, QTimer] = {}
+        self._clocks_paused = False
         self._prop_timer = QTimer(self)
         self._prop_timer.setSingleShot(True)
         self._prop_timer.timeout.connect(self._process_next_signal)
@@ -317,16 +321,23 @@ class BoardView(QGraphicsView):
         on = any(w._on for w in junc._wires)
         junc.set_active(on)
 
-    def rebuild_connections(self):
+    def rebuild_connections(self, recalculate: bool = False):
         """Reconstruye la red lógica desde los cables visibles.
 
         Una unión es puramente conductora; por eso se resuelve como un grafo y
         no como dos conexiones independientes. Esto hace que los ramales y los
         puntos de unión creados automáticamente transmitan señal correctamente.
+        ``recalculate`` vuelve a evaluar los componentes con estado guardado
+        tras eliminar o restaurar una parte del circuito.
         """
         self._prop_timer.stop()
         self._signal_queue.clear()
+        # A project may be opened while a delayed propagation is pending. The
+        # timer is stopped above, so its old processing flag must not strand
+        # every signal queued by the newly loaded project.
+        self._processing_signals = False
         self._signal_steps = 0
+        self._signal_visits.clear()
         parent = getattr(self, "owner", self.parent())
         widgets = list(getattr(parent, "all_widgets", {}).values())
         for widget in widgets:
@@ -354,28 +365,98 @@ class BoardView(QGraphicsView):
                         source.graphic.widg.connect_to(
                             source.port_index, node.graphic.widg, node.port_index)
 
-        # Recalcular todos los estados evita que un proyecto cargado o un cable
-        # nuevo dependa de un cambio de interruptor posterior para actualizarse.
-        for widget in widgets:
-            widget.enter = [False] * len(widget.enter)
         self._input_drivers.clear()
-        for widget in widgets:
-            if hasattr(widget, "truth_row"):
-                self.enqueue_action(widget.delay_ms,
-                                    lambda current=widget: current.compute_and_propagate(self))
-            else:
-                widget.compute_and_propagate(self)
-        # Un interruptor ya encendido no cambia de estado al reconstruir la red,
-        # así que se envían también los valores actuales de todas las salidas.
-        for widget in widgets:
-            for out_index, destinations in widget.connections.items():
-                value = widget.exit[out_index] if out_index < len(widget.exit) else False
-                for destination, in_index in destinations:
-                    self.enqueue_signal(destination, in_index, value,
-                                        source=(widget, out_index))
+        has_saved_state = bool(widgets) and all(
+            getattr(widget, "_has_saved_logic_state", False) for widget in widgets)
+        if has_saved_state:
+            # The current component outputs are the stored memory of recursive
+            # circuits. Rebuild each input's wired-OR value from those outputs
+            # without recomputing gates and erasing the latch state.
+            for widget in widgets:
+                widget.enter = [False] * len(widget.enter)
+            for source in widgets:
+                for out_index, destinations in source.connections.items():
+                    value = bool(source.exit[out_index]) if out_index < len(source.exit) else False
+                    for destination, in_index in destinations:
+                        if not 0 <= in_index < len(destination.enter):
+                            continue
+                        drivers = self._input_drivers.setdefault((destination, in_index), {})
+                        drivers[(source, out_index)] = value
+                        destination.enter[in_index] = any(drivers.values())
+            for widget in widgets:
+                if widget.graphic:
+                    for index in range(len(widget.enter)):
+                        widget.graphic.update_port_color(index, is_input=True)
+            if recalculate:
+                # Las entradas pueden haber cambiado por una modificación de
+                # topología; propaga el resultado de volver a evaluarlas.
+                for widget in widgets:
+                    if hasattr(widget, "truth_row"):
+                        self.enqueue_action(widget.delay_ms,
+                                            lambda current=widget: current.compute_and_propagate(self))
+                    else:
+                        widget.compute_and_propagate(self)
+                for widget in widgets:
+                    for out_index, destinations in widget.connections.items():
+                        value = widget.exit[out_index] if out_index < len(widget.exit) else False
+                        for destination, in_index in destinations:
+                            self.enqueue_signal(destination, in_index, value,
+                                                source=(widget, out_index))
+        else:
+            # Older project files do not contain the components' live state.
+            # Recalculate in component order: the immediate propagation gives
+            # a feedback network such as two cross-coupled NOR gates a stable
+            # initial latch state instead of making both gates switch at once.
+            for widget in widgets:
+                widget.enter = [False] * len(widget.enter)
+            for widget in widgets:
+                if hasattr(widget, "truth_row"):
+                    self.enqueue_action(widget.delay_ms,
+                                        lambda current=widget: current.compute_and_propagate(self))
+                else:
+                    widget.compute_and_propagate(self)
+            # Sources that are already active do not transition during rebuild,
+            # so seed every current output, including inactive ones.
+            for widget in widgets:
+                for out_index, destinations in widget.connections.items():
+                    value = widget.exit[out_index] if out_index < len(widget.exit) else False
+                    for destination, in_index in destinations:
+                        self.enqueue_signal(destination, in_index, value,
+                                            source=(widget, out_index))
         for graphic in getattr(parent, "all_graphics", {}).values():
             graphic.update_all_output_wires()
         self._refresh_network_colours(adjacency)
+        self.sync_clock_timers()
+
+    def sync_clock_timers(self):
+        """Keep one board-owned timer per clock currently in the project."""
+        from widgets.widgets import Clock
+
+        parent = getattr(self, "owner", self.parent())
+        clocks = {widget for widget in getattr(parent, "all_widgets", {}).values()
+                  if isinstance(widget, Clock)}
+        for clock, timer in list(self._clock_timers.items()):
+            if clock not in clocks:
+                timer.stop()
+                timer.deleteLater()
+                self._clock_timers.pop(clock, None)
+        for clock in clocks:
+            timer = self._clock_timers.get(clock)
+            if timer is None:
+                timer = QTimer(self)
+                timer.setSingleShot(False)
+                timer.timeout.connect(lambda current=clock: current.tick(self))
+                self._clock_timers[clock] = timer
+            interval = max(10, int(clock.interval_ms))
+            if self._clocks_paused:
+                timer.stop()
+            elif not timer.isActive() or timer.interval() != interval:
+                timer.start(interval)
+
+    def set_clocks_paused(self, paused: bool):
+        """Pause or resume every project clock, including clocks added later."""
+        self._clocks_paused = bool(paused)
+        self.sync_clock_timers()
 
     def _refresh_network_colours(self, adjacency=None):
         if adjacency is None:
@@ -441,7 +522,7 @@ class BoardView(QGraphicsView):
         for ep in (src, dst):
             if isinstance(ep, WireEndpoint) and ep.scene() and not ep._wires:
                 self.scene.removeItem(ep)
-        self.rebuild_connections()
+        self.rebuild_connections(recalculate=True)
 
     def _remove_junction(self, junc: Junction):
         if junc.scene() is None:
@@ -464,17 +545,23 @@ class BoardView(QGraphicsView):
             view_parent.all_widgets.pop(wid, None)
             view_parent.all_graphics.pop(wid, None)
         self.scene.removeItem(graphic)
-        self.rebuild_connections()
+        self.rebuild_connections(recalculate=True)
 
     # ── Propagación BFS ──────────────────────────────────────────────────────
 
     def enqueue_signal(self, widget, enter_idx: int, value: bool, source=None):
+        if self._signal_halted:
+            self._signal_halted = False
+            self._signal_visits.clear()
         self._signal_queue.append((widget, enter_idx, value, widget.delay_ms, source))
         if not self._prop_timer.isActive() and not self._processing_signals:
             self._process_next_signal()
 
     def enqueue_action(self, delay_ms: int, callback):
         """Queue a delayed component response alongside ordinary input signals."""
+        if self._signal_halted:
+            self._signal_halted = False
+            self._signal_visits.clear()
         self._signal_queue.append((None, None, callback, max(0, int(delay_ms)), None))
         if not self._prop_timer.isActive() and not self._processing_signals:
             self._process_next_signal()
@@ -482,6 +569,7 @@ class BoardView(QGraphicsView):
     def _process_next_signal(self):
         if not self._signal_queue:
             self._processing_signals = False
+            self._signal_steps = 0
             return
         self._processing_signals = True
         min_delay = min(item[3] for item in self._signal_queue)
@@ -497,38 +585,78 @@ class BoardView(QGraphicsView):
         if min_delay > 0:
             def fire():
                 for widget, enter_idx, value, source in current_batch:
+                    if self._signal_halted:
+                        return
                     if widget is None:
                         value()
                     else:
                         self._apply_signal(widget, enter_idx, value, source)
+                if self._signal_halted:
+                    return
                 self._processing_signals = False
                 if self._signal_queue:
                     self._process_next_signal()
+                else:
+                    self._signal_steps = 0
+                    self._signal_visits.clear()
             self._prop_timer.timeout.disconnect()
             self._prop_timer.timeout.connect(fire)
             self._prop_timer.start(min_delay)
             return
 
         for widget, enter_idx, value, source in current_batch:
+            if self._signal_halted:
+                return
             if widget is None:
                 value()
             else:
                 self._apply_signal(widget, enter_idx, value, source)
+        if self._signal_halted:
+            return
         self._processing_signals = False
         if self._signal_queue:
             self._prop_timer.timeout.disconnect()
             self._prop_timer.timeout.connect(self._process_next_signal)
             self._prop_timer.start(0)
+        else:
+            self._signal_steps = 0
+            self._signal_visits.clear()
+
+    def _stop_signal_oscillation(self):
+        """Stop a detected signal cycle and explain how to recover."""
+        parent = getattr(self, "owner", self.parent())
+        self._signal_queue.clear()
+        self._signal_visits.clear()
+        self._signal_steps = 0
+        self._processing_signals = False
+        self._signal_halted = True
+        self._prop_timer.stop()
+        for timer in self._clock_timers.values():
+            timer.stop()
+        self._clocks_paused = True
+        pause_action = getattr(parent, "actionPausarRelojes", None)
+        if pause_action is not None:
+            pause_action.blockSignals(True)
+            pause_action.setChecked(True)
+            pause_action.blockSignals(False)
+        QMessageBox.warning(parent, translate_text("Oscilación o bucle infinito"),
+                            translate_text("Se detectó una oscilación o un bucle infinito en una realimentación combinacional. La simulación se detuvo y los relojes se pausaron. Revisa las conexiones antes de continuar."))
+        if parent and hasattr(parent, "statusBar"):
+            parent.statusBar().showMessage(
+                translate_text("Simulación detenida: oscilación o bucle infinito detectado"),
+                8000)
 
     def _apply_signal(self, widget, enter_idx: int, value: bool, source=None):
         self._signal_steps += 1
         if self._signal_steps > 10_000:
-            self._signal_queue.clear()
-            parent = getattr(self, "owner", self.parent())
-            if parent and hasattr(parent, "statusBar"):
-                parent.statusBar().showMessage("Simulación detenida: se detectó un bucle de señal", 5000)
+            self._stop_signal_oscillation()
             return
         if enter_idx >= len(widget.enter):
+            return
+        visit = (widget, enter_idx, repr(source), bool(value))
+        self._signal_visits[visit] = self._signal_visits.get(visit, 0) + 1
+        if self._signal_visits[visit] >= 3:
+            self._stop_signal_oscillation()
             return
         pin_key = (widget, enter_idx)
         drivers = self._input_drivers.setdefault(pin_key, {})

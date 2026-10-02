@@ -29,6 +29,7 @@ import widgets.widgets as wdg
 import widgets.graphics as gra
 from widgets.graphics import Port, Wire, Junction, WireEndpoint
 from project_io import dump_project, module_definition
+from verificar_updates import comprobar_actualizaciones
 
 BASE_DIR = Path(__file__).resolve().parent
 USER_DIR = BASE_DIR / "user"
@@ -38,6 +39,25 @@ LANGUAGE_DIR = USER_DIR / "Idiomas"
 PROJECTS_DIR = BASE_DIR / "Proyectos"
 EXPORTS_DIR = BASE_DIR / "Exports"
 os.chdir(BASE_DIR)
+
+def _supported_dmodule(data):
+    """Accept public module formats 1/1.1 and reject pre-repository trials."""
+    if not isinstance(data, dict) or data.get("format") != "DaLogic module":
+        return False
+    try:
+        version = float(data.get("version", 0))
+    except (TypeError, ValueError):
+        return False
+    if version == 1.0:
+        # Published format 1 modules store one explicit input/output record per row.
+        # Old trial files also said version 1, but packed the rows into integers.
+        table = data.get("truth_table")
+        return isinstance(table, list) and all(isinstance(row, dict) for row in table)
+    if version == 1.1:
+        # 1.1 stores the literal sequential circuit; it is unreadable by DaLogic v1.0.
+        return "truth_table" not in data and isinstance(data.get("stateful_circuit"), dict)
+    return False
+
 
 # La interfaz generada se incluye en el repositorio. Compilarla en cada arranque
 # hacía que la aplicación se bloqueara cuando Qt Creator no estaba instalado.
@@ -378,8 +398,9 @@ class TruthTableOrderDialog(QDialog):
             group = QGroupBox(title, content)
             group_layout = QVBoxLayout(group)
             for index, widget in enumerate(widgets):
-                if isinstance(widget, (wdg.Switch, wdg.Button)):
-                    kind = "Botón" if isinstance(widget, wdg.Button) else "Interruptor"
+                if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock)):
+                    kind = ("Botón" if isinstance(widget, wdg.Button) else
+                            "Reloj" if isinstance(widget, wdg.Clock) else "Interruptor")
                 else:
                     kind = "Bombilla" if isinstance(widget, wdg.Bulb) else "Display"
                 row = QHBoxLayout()
@@ -458,6 +479,7 @@ class VentanaInicial(QMainWindow):
         "NAND":        (wdg.NAND,    gra.LogicGateGraphic, None, 1.0),
         "NOR":         (wdg.NOR,     gra.LogicGateGraphic, None, 1.0),
         "INTERRUPTOR": (wdg.Switch,  gra.LogicGateGraphic, None, 1.0),
+        "RELOJ":       (wdg.Clock,   gra.LogicGateGraphic, None, 1.0),
         "BOTON":       (wdg.Button,  gra.LogicGateGraphic, None, 1.0),
         "RETARDO":     (wdg.Delay,   gra.LogicGateGraphic, None, 1.0),
         "BOMBILLA":    (wdg.Bulb,    gra.BulbGraphic,    None,                          1.0),
@@ -538,6 +560,10 @@ class VentanaInicial(QMainWindow):
         self.ui.RETARDO.setToolTip("Retrasa una señal; configura los milisegundos con clic derecho.")
         self.ui.verticalLayout_2.insertWidget(self.ui.verticalLayout_2.count() - 1, self.ui.RETARDO)
         self.ui.RETARDO.clicked.connect(lambda: self.crear_widget("RETARDO"))
+        self.ui.RELOJ = QPushButton("RELOJ", self.ui.Puertas)
+        self.ui.RELOJ.setToolTip("Genera una señal cuadrada periódica; clic derecho para ajustar el intervalo.")
+        self.ui.verticalLayout_2.insertWidget(self.ui.verticalLayout_2.count() - 1, self.ui.RELOJ)
+        self.ui.RELOJ.clicked.connect(lambda: self.crear_widget("RELOJ"))
         self.ui.BOTON = QPushButton("BOTÓN", self.ui.Puertas)
         self.ui.BOTON.setToolTip("Activa la salida solo mientras mantienes pulsado el componente.")
         self.ui.verticalLayout_2.insertWidget(self.ui.verticalLayout_2.count() - 1, self.ui.BOTON)
@@ -553,7 +579,8 @@ class VentanaInicial(QMainWindow):
             new_widg = wdg.Module(widget_id, data.get("name", "Módulo"),
                                    int(data.get("inputs", 1)), int(data.get("outputs", 1)),
                                    data.get("truth_table", []),
-                                   data.get("input_numbers"), data.get("output_numbers"))
+                                   data.get("input_numbers"), data.get("output_numbers"),
+                                   data.get("stateful_circuit"), data.get("stateful_state"))
             new_widg.delay_ms = int(data.get("delay_ms", new_widg.delay_ms))
             new_widg.module_source = data.get("source", "")
             module_path = data.get("module_path")
@@ -578,17 +605,31 @@ class VentanaInicial(QMainWindow):
             elif isinstance(new_widg, wdg.Display):
                 colors = data.get("segment_colors", [None] * 7)
                 new_widg.segment_colors = (list(colors) + [None] * 7)[:7]
-            if isinstance(new_widg, (wdg.Switch, wdg.Button)):
+            if isinstance(new_widg, wdg.Clock):
+                new_widg.set_interval(int(data.get("interval_ms", new_widg.interval_ms)))
+            if isinstance(new_widg, (wdg.Switch, wdg.Button, wdg.Clock)):
                 new_widg.state = bool(data.get("state", False))
                 new_widg.exit[0] = new_widg.state
             new_graph = cls_graph(new_widg) if cls_graph else gra.Graphic(new_widg, svg_path, scale)
 
+        has_saved_logic_state = "logic_inputs" in data or "logic_outputs" in data
+        if has_saved_logic_state:
+            saved_inputs = data.get("logic_inputs", [])
+            saved_outputs = data.get("logic_outputs", [])
+            if isinstance(saved_inputs, list):
+                new_widg.enter = ([bool(value) for value in saved_inputs] +
+                                  [False] * len(new_widg.enter))[:len(new_widg.enter)]
+            if isinstance(saved_outputs, list):
+                new_widg.exit = ([bool(value) for value in saved_outputs] +
+                                 [False] * len(new_widg.exit))[:len(new_widg.exit)]
+        new_widg._has_saved_logic_state = has_saved_logic_state
+
         if "truth_table_number" in data and data["truth_table_number"] is not None:
             new_widg.truth_table_number = int(data["truth_table_number"])
-        elif isinstance(new_widg, (wdg.Switch, wdg.Button)):
+        elif isinstance(new_widg, (wdg.Switch, wdg.Button, wdg.Clock)):
             existing = [getattr(widget, "truth_table_number", -1)
                         for widget in self.all_widgets.values()
-                        if isinstance(widget, (wdg.Switch, wdg.Button))]
+                        if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock))]
             new_widg.truth_table_number = max(existing, default=-1) + 1
         elif isinstance(new_widg, (wdg.Bulb, wdg.Display)):
             existing = [getattr(widget, "truth_table_number", -1)
@@ -605,6 +646,8 @@ class VentanaInicial(QMainWindow):
         self.all_widgets[widget_id] = new_widg
         self.all_graphics[widget_id] = new_graph
         self.next_id = max(self.next_id, widget_id + 1)
+        if isinstance(new_widg, wdg.Clock):
+            self.ui.graphicsView.sync_clock_timers()
         return new_graph
 
     def type_for_widget(self, widget) -> str:
@@ -701,6 +744,13 @@ class VentanaInicial(QMainWindow):
         self.actionAjustarVista = QAction("Ajustar a circuito", self)
         self.actionAjustarVista.setShortcut("Ctrl+0")
         self.actionAjustarVista.triggered.connect(self.ajustar_vista)
+        self.actionPausarRelojes = QAction("Pausar relojes", self)
+        self.actionPausarRelojes.setCheckable(True)
+        self.actionPausarRelojes.setShortcut("F6")
+        self.actionPausarRelojes.setToolTip(
+            "Pausa o reanuda todos los relojes del circuito (F6).")
+        self.actionPausarRelojes.toggled.connect(
+            self.ui.graphicsView.set_clocks_paused)
         self.actionEliminar = QAction("Eliminar selección", self)
         self.actionEliminar.setShortcut("Supr")
         self.actionEliminar.triggered.connect(self.eliminar_seleccion)
@@ -708,6 +758,7 @@ class VentanaInicial(QMainWindow):
         self.menuVer = self.menuBar().addMenu("Ver")
         self.menuVer.addAction(self.actionTema)
         self.menuVer.addAction(self.actionAjustarVista)
+        self.menuVer.addAction(self.actionPausarRelojes)
 
         toolbar = QToolBar("Acciones principales", self)
         toolbar.setObjectName("barraPrincipal")
@@ -721,6 +772,7 @@ class VentanaInicial(QMainWindow):
         toolbar.addAction(self.actionEliminar)
         toolbar.addSeparator()
         toolbar.addAction(self.actionAjustarVista)
+        toolbar.addAction(self.actionPausarRelojes)
         toolbar.addAction(self.actionTema)
         self.addToolBar(toolbar)
         toolbar.addSeparator()
@@ -740,6 +792,8 @@ class VentanaInicial(QMainWindow):
             spanish_path.write_text(json.dumps(
                 {"code": "es", "name": "Español", "translations": {}},
                 ensure_ascii=False, indent=2), encoding="utf-8")
+        visible = self._collect_language_defaults()
+        visible_keys = set(visible)
         catalogs = {}
         for path in sorted(LANGUAGE_DIR.glob("*.json"), key=lambda item: item.name.casefold()):
             try:
@@ -749,11 +803,15 @@ class VentanaInicial(QMainWindow):
                     continue
                 code = str(payload.get("code") or path.stem)
                 name = str(payload.get("name") or code)
+                filtered = {str(k): str(v) for k, v in translations.items()
+                            if str(k) in visible_keys and isinstance(v, (str, int, float))}
                 catalogs[code] = {
-                    "code": code, "name": name,
-                    "translations": {str(k): str(v) for k, v in translations.items()
-                                    if isinstance(v, (str, int, float))}
+                    "code": code, "name": name, "translations": filtered
                 }
+                # Keep user-created language files focused on strings displayed by the UI.
+                if filtered != translations:
+                    path.write_text(json.dumps(catalogs[code], ensure_ascii=False, indent=2),
+                                    encoding="utf-8")
             except (OSError, ValueError, TypeError, AttributeError, json.JSONDecodeError):
                 continue
         return catalogs
@@ -812,18 +870,60 @@ class VentanaInicial(QMainWindow):
                     original = [obj.itemText(i) for i in range(obj.count())]
                     obj._dalogic_original_items = original
                 defaults.update((value, value) for value in original if value)
-        for relative in ("main.py", "board_view.py", "widgets/widgets.py",
-                         "widgets/graphics.py", "resources/compiled/ui_ventana1.py",
-                         "resources/compiled/ui_config.py", "resources/compiled/ui_credits.py"):
+
+        # Only extract literals passed to APIs that display text. Arbitrary string
+        # constants (JSON fields, CSS, filenames, identifiers, etc.) stay in code.
+        source_files = ("main.py", "board_view.py", "widgets/widgets.py",
+                        "widgets/graphics.py", "resources/compiled/ui_ventana1.py",
+                        "resources/compiled/ui_config.py", "resources/compiled/ui_credits.py")
+        text_constructors = {"QAction", "QCheckBox", "QDialog", "QGroupBox", "QLabel",
+                             "QLineEdit", "QPushButton", "QRadioButton", "QTableWidgetItem",
+                             "QToolBar"}
+        text_methods = {"setText", "setWindowTitle", "setTitle", "setToolTip",
+                        "setStatusTip", "setWhatsThis", "setPlaceholderText",
+                        "setAccessibleName", "setInformativeText", "setDetailedText",
+                        "showMessage", "setHorizontalHeaderLabels", "addItems", "addMenu"}
+        dialog_methods = {"information", "warning", "critical", "question"}
+        input_methods = {"getText", "getItem", "getInt", "getDouble"}
+        file_methods = {"getOpenFileName", "getSaveFileName", "getOpenFileNames",
+                        "getExistingDirectory"}
+
+        def add_literal(node):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                value = node.value
+                if 1 < len(value) <= 180 and value.strip() and any(c.isalpha() for c in value):
+                    defaults.setdefault(value, value)
+            elif isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+                for child in node.elts:
+                    add_literal(child)
+
+        for relative in source_files:
             try:
                 syntax = ast.parse((BASE_DIR / relative).read_text(encoding="utf-8"))
             except (OSError, SyntaxError):
                 continue
             for node in ast.walk(syntax):
-                if (isinstance(node, ast.Constant) and isinstance(node.value, str)
-                        and 1 < len(node.value) <= 180 and node.value.strip()
-                        and any(character.isalpha() for character in node.value)):
-                    defaults.setdefault(node.value, node.value)
+                if not isinstance(node, ast.Call):
+                    continue
+                func = node.func
+                name = func.attr if isinstance(func, ast.Attribute) else (
+                    func.id if isinstance(func, ast.Name) else "")
+                indexes = ()
+                if name in text_constructors or name in text_methods or name == "translate_text":
+                    indexes = (0,)
+                elif name in {"addTab", "setTabText", "setItemText"}:
+                    indexes = (1,)
+                elif name == "translate" and isinstance(func, ast.Attribute) and func.attr == "translate":
+                    indexes = (1,)
+                elif name in dialog_methods:
+                    indexes = (1, 2)
+                elif name in input_methods:
+                    indexes = (1, 2)
+                elif name in file_methods:
+                    indexes = (1, 3) if name != "getExistingDirectory" else (1,)
+                for index in indexes:
+                    if index < len(node.args):
+                        add_literal(node.args[index])
         return defaults
 
     def _prepare_language_selector(self):
@@ -1021,10 +1121,17 @@ class VentanaInicial(QMainWindow):
         return module_definition(str(data.get("name", "Módulo")),
             int(data.get("inputs", 1)), int(data.get("outputs", 1)),
             data.get("truth_table", []), int(data.get("delay_ms", 0)),
-            data.get("input_numbers"), data.get("output_numbers"))
+            data.get("input_numbers"), data.get("output_numbers"),
+            data.get("stateful_circuit"))
 
     def _module_signature(self, data):
         definition = self._module_definition(data)
+        if definition.get("stateful_circuit"):
+            return (definition["name"].casefold(), definition["inputs"],
+                    definition["outputs"], tuple(definition["input_numbers"]),
+                    tuple(definition["output_numbers"]),
+                    json.dumps(definition["stateful_circuit"], sort_keys=True,
+                               ensure_ascii=False, separators=(",", ":")))
         rows = tuple((tuple(row["inputs"]), tuple(row["outputs"]), row["time_ms"])
                      for row in definition["truth_table"])
         return (definition["name"].casefold(), definition["inputs"],
@@ -1049,7 +1156,7 @@ class VentanaInicial(QMainWindow):
         for path in sorted(CI_LIBRARY_DIR.glob("*.dmodule"), key=lambda item: item.name.casefold()):
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
-                if data.get("format") == "DaLogic module" and int(data.get("version", 0)) in {1, 2}:
+                if _supported_dmodule(data):
                     modules.append((path, self._module_definition(data)))
             except (OSError, ValueError, TypeError, AttributeError, json.JSONDecodeError):
                 continue
@@ -1112,7 +1219,8 @@ class VentanaInicial(QMainWindow):
                 "inputs": len(widget.enter), "outputs": len(widget.exit),
                 "truth_table": widget.truth_table,
                 "input_numbers": widget.input_numbers,
-                "output_numbers": widget.output_numbers})
+                "output_numbers": widget.output_numbers,
+                "stateful_circuit": widget.stateful_circuit})
             for widget in self.all_widgets.values()
             if isinstance(widget, wdg.Module) and
             getattr(widget, "module_source", "") == "uploaded")
@@ -1132,7 +1240,8 @@ class VentanaInicial(QMainWindow):
                 "inputs": len(widget.enter), "outputs": len(widget.exit),
                 "truth_table": widget.truth_table,
                 "input_numbers": widget.input_numbers,
-                "output_numbers": widget.output_numbers})
+                "output_numbers": widget.output_numbers,
+                "stateful_circuit": widget.stateful_circuit})
             signature = self._module_signature(definition)
             if signature in library_sigs or signature in imported_sigs or source not in {"project", "library"}:
                 continue
@@ -1156,7 +1265,8 @@ class VentanaInicial(QMainWindow):
             self._add_ci_section("Cargado", loaded, "")
         self._ci_content_layout.addStretch(1)
 
-    def _save_ci_definition(self, name, inputs, outputs, table):
+    def _save_ci_definition(self, name, inputs, outputs, table,
+                            stateful_circuit=None):
         suggested = CI_LIBRARY_DIR / f"{name}.dmodule"
         save, _ = QFileDialog.getSaveFileName(
             self, "Guardar CI en Biblioteca", str(suggested), "Módulo DaLogic (*.dmodule)")
@@ -1165,24 +1275,28 @@ class VentanaInicial(QMainWindow):
         path = Path(save).with_suffix(".dmodule")
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(module_definition(name, inputs, outputs, table),
+            path.write_text(json.dumps(module_definition(name, inputs, outputs, table,
+                                                        stateful_circuit=stateful_circuit),
                                        ensure_ascii=False, indent=2), encoding="utf-8")
         except OSError as exc:
             QMessageBox.critical(self, "No se pudo guardar el CI", str(exc))
             return None
-        self._mark_module_source(name, inputs, outputs, table, "library")
+        self._mark_module_source(name, inputs, outputs, table, "library", stateful_circuit)
         self.actualizar_biblioteca_ci()
         return path.resolve()
 
-    def _mark_module_source(self, name, inputs, outputs, table, source):
+    def _mark_module_source(self, name, inputs, outputs, table, source,
+                            stateful_circuit=None):
         target = self._module_signature({"name": name, "inputs": inputs,
-                                         "outputs": outputs, "truth_table": table})
+                                         "outputs": outputs, "truth_table": table,
+                                         "stateful_circuit": stateful_circuit})
         for widget in self.all_widgets.values():
             if isinstance(widget, wdg.Module) and self._module_signature({
                     "name": widget.name, "inputs": len(widget.enter),
                     "outputs": len(widget.exit), "truth_table": widget.truth_table,
                     "input_numbers": widget.input_numbers,
-                    "output_numbers": widget.output_numbers}) == target:
+                    "output_numbers": widget.output_numbers,
+                    "stateful_circuit": widget.stateful_circuit}) == target:
                 widget.module_source = source
 
     def _capturar_iconos(self):
@@ -1305,11 +1419,14 @@ class VentanaInicial(QMainWindow):
         board = self.ui.graphicsView
         board._prop_timer.stop()
         board._signal_queue.clear()
+        board._processing_signals = False
+        board._signal_steps = 0
         board._input_drivers.clear()
         board.scene.clear()
         board._draw_center()
         self.all_widgets.clear()
         self.all_graphics.clear()
+        board.sync_clock_timers()
         self.next_id = 0
         self.actualizar_biblioteca_ci()
 
@@ -1450,7 +1567,7 @@ class VentanaInicial(QMainWindow):
             self._clear_project()
             QMessageBox.critical(self, "Proyecto inválido", f"No se pudo reconstruir el circuito: {exc}")
             return
-        self.ui.graphicsView.rebuild_connections()
+        self.ui.graphicsView.rebuild_connections(recalculate=_history_state is not None)
         if _history_state is None:
             self.project_path = path
             self.project_name = data.get("name") or path.stem
@@ -1553,7 +1670,10 @@ class VentanaInicial(QMainWindow):
             item = {"type": self.type_for_widget(widget), "position": [graphic.x(), graphic.y()],
                     "inputs": len(widget.enter), "outputs": len(widget.exit), "delay_ms": widget.delay_ms,
                     "truth_table_number": getattr(widget, "truth_table_number", widget.id)}
-            if isinstance(widget, (wdg.Switch, wdg.Button)): item["state"] = widget.state
+            if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock)):
+                item["state"] = widget.state
+            if isinstance(widget, wdg.Clock):
+                item["interval_ms"] = widget.interval_ms
             if isinstance(widget, wdg.Bulb): item["bulb_color"] = widget.bulb_color
             if isinstance(widget, wdg.Display): item["segment_colors"] = widget.segment_colors.copy()
             if isinstance(widget, wdg.Module):
@@ -1561,7 +1681,9 @@ class VentanaInicial(QMainWindow):
                             input_numbers=widget.input_numbers,
                             output_numbers=widget.output_numbers,
                             source=getattr(widget, "module_source", ""),
-                            module_path=getattr(widget, "module_path", None))
+                            module_path=getattr(widget, "module_path", None),
+                            stateful_circuit=widget.stateful_circuit,
+                            stateful_state=widget.export_stateful_state())
             self._clipboard.append(item)
 
     def cortar(self):
@@ -1727,7 +1849,8 @@ class VentanaInicial(QMainWindow):
                             dst.enter[in_index] |= bool(src.exit[out_index])
                     previous = {widget: widget.exit.copy() for widget in chosen}
                     for widget in chosen:
-                        if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Bulb, wdg.Display)):
+                        if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock,
+                                               wdg.Bulb, wdg.Display)):
                             continue
                         widget.logic()
                     if all(previous[widget] == widget.exit for widget in chosen):
@@ -1751,6 +1874,26 @@ class VentanaInicial(QMainWindow):
                     widget.response_ms = response_ms
         return table
 
+    @staticmethod
+    def _has_recursive_connections(edges):
+        """Return whether the directed component graph contains a feedback loop."""
+        adjacency = {}
+        indegree = {}
+        for source, _out_index, destination, _in_index in edges:
+            adjacency.setdefault(source, []).append(destination)
+            indegree.setdefault(source, 0)
+            indegree[destination] = indegree.get(destination, 0) + 1
+        pending = [widget for widget, degree in indegree.items() if degree == 0]
+        visited = 0
+        while pending:
+            widget = pending.pop()
+            visited += 1
+            for destination in adjacency.get(widget, ()):
+                indegree[destination] -= 1
+                if indegree[destination] == 0:
+                    pending.append(destination)
+        return visited != len(indegree)
+
     def localizar_elemento_tabla(self, widget):
         graphic = self.all_graphics.get(widget.id)
         if not graphic or not graphic.scene():
@@ -1764,11 +1907,20 @@ class VentanaInicial(QMainWindow):
         """Calcula la tabla del circuito completo con interruptores y botones como entradas."""
         widgets = list(self.all_widgets.values())
         sources = sorted((widget for widget in widgets
-                          if isinstance(widget, (wdg.Switch, wdg.Button))),
+                          if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock))),
                          key=lambda widget: widget.id)
         edges = [(src, out_index, dst, in_index)
                  for src in widgets for out_index, destinations in src.connections.items()
                  for dst, in_index in destinations]
+        if (self._has_recursive_connections(edges) or
+                any(isinstance(widget, wdg.Module) and widget.stateful_circuit
+                    for widget in widgets)):
+            QMessageBox.warning(
+                self, "Tabla de verdad no disponible",
+                "El circuito contiene conexiones recursivas (realimentación) y su resultado "
+                "depende de estados anteriores. La tabla de verdad combinacional no puede "
+                "representar ese comportamiento.")
+            return
         incoming = {(dst, in_index) for _src, _out, dst, in_index in edges}
         connected_sources = [source for source in sources
                              if any(source.connections.values())]
@@ -1789,12 +1941,13 @@ class VentanaInicial(QMainWindow):
         ignored_outputs = []
         for source in sources:
             if not any(source.connections.values()):
-                kind = "Botón" if isinstance(source, wdg.Button) else "Interruptor"
+                kind = ("Botón" if isinstance(source, wdg.Button) else
+                        "Reloj" if isinstance(source, wdg.Clock) else "Interruptor")
                 ignored_inputs.append(f"{kind} {source.id}: sin conexión; se excluye como entrada")
 
         bulbs, displays = [], []
         for widget in widgets:
-            if isinstance(widget, (wdg.Switch, wdg.Button)):
+            if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock)):
                 continue
             if isinstance(widget, wdg.Bulb):
                 if (widget, 0) in incoming:
@@ -1891,7 +2044,7 @@ class VentanaInicial(QMainWindow):
                             dst.enter[in_index] |= bool(src.exit[out_index])
                     previous = {widget: widget.exit.copy() for widget in widgets}
                     for widget in widgets:
-                        if isinstance(widget, (wdg.Switch, wdg.Button,
+                        if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock,
                                                wdg.Bulb, wdg.Display)):
                             continue
                         widget.logic()
@@ -1930,7 +2083,7 @@ class VentanaInicial(QMainWindow):
                     for index in range(len(widget.exit)):
                         widget.graphic.update_port_color(index, is_input=False)
                     widget.graphic.update_all_output_wires()
-                    if isinstance(widget, (wdg.Switch, wdg.Button)):
+                    if isinstance(widget, (wdg.Switch, wdg.Button, wdg.Clock)):
                         widget.graphic.update_switch_look()
 
         calculation_ms = (time.perf_counter() - started) * 1000
@@ -1948,6 +2101,80 @@ class VentanaInicial(QMainWindow):
         ports = graphic._ports_in if side == "in" else graphic._ports_out
         return ports[index] if 0 <= index < len(ports) else None
 
+    def _build_stateful_module_circuit(self, chosen_widgets, input_widgets,
+                                       output_widgets):
+        """Serialize a feedback circuit as a compact, reusable gate network."""
+        node_types = (wdg.AND, wdg.OR, wdg.XOR, wdg.NOT, wdg.NAND, wdg.NOR,
+                      wdg.Delay, wdg.Module)
+        interface_sources = set(input_widgets)
+        interface_outputs = set(output_widgets)
+        internal = [widget for widget in chosen_widgets
+                    if widget not in interface_sources and widget not in interface_outputs]
+        unsupported = [widget for widget in internal
+                       if not isinstance(widget, node_types)]
+        if unsupported:
+            names = ", ".join(type(widget).__name__ for widget in unsupported[:4])
+            return None, f"La selección secuencial contiene módulos o elementos no compatibles: {names}."
+
+        components = []
+        for widget in sorted(internal, key=lambda item: item.id):
+            spec = {"id": widget.id, "type": self.type_for_widget(widget),
+                    "inputs": len(widget.enter), "outputs": len(widget.exit),
+                    "delay_ms": widget.delay_ms}
+            if isinstance(widget, wdg.Module):
+                spec.update(name=widget.name, truth_table=widget.truth_table,
+                            input_numbers=widget.input_numbers,
+                            output_numbers=widget.output_numbers,
+                            stateful_circuit=widget.stateful_circuit)
+                if widget.stateful_circuit:
+                    spec["stateful_state"] = widget.export_stateful_state()
+            components.append(spec)
+        connections = []
+        input_bindings = [{"input": index, "targets": []}
+                          for index in range(len(input_widgets))]
+        output_bindings = [{"output": index, "sources": []}
+                           for index in range(len(output_widgets))]
+        input_indexes = {widget: index for index, widget in enumerate(input_widgets)}
+        output_indexes = {widget: index for index, widget in enumerate(output_widgets)}
+        for source in chosen_widgets:
+            for output_index, destinations in source.connections.items():
+                for destination, input_index in destinations:
+                    if destination not in chosen_widgets:
+                        continue
+                    if source in interface_sources and destination in internal:
+                        input_bindings[input_indexes[source]]["targets"].append(
+                            {"node": destination.id, "port": input_index})
+                    elif source in internal and destination in internal:
+                        connections.append({"source": source.id, "output": output_index,
+                                            "destination": destination.id, "input": input_index})
+                    elif source in internal and destination in interface_outputs:
+                        output_bindings[output_indexes[destination]]["sources"].append(
+                            {"node": source.id, "port": output_index})
+                    elif source in interface_sources and destination in interface_outputs:
+                        output_bindings[output_indexes[destination]]["sources"].append(
+                            {"input": input_indexes[source]})
+
+        if not input_widgets or not output_widgets:
+            return None, "Selecciona al menos una entrada y una bombilla de salida para el módulo secuencial."
+        if any(not binding["sources"] for binding in output_bindings):
+            return None, "Cada bombilla de salida del módulo debe estar conectada a una señal."
+        initial_nodes = {}
+        for widget in internal:
+            state = {"enter": list(widget.enter), "exit": list(widget.exit)}
+            if isinstance(widget, wdg.Module) and widget.stateful_circuit:
+                state["stateful_state"] = widget.export_stateful_state()
+            initial_nodes[str(widget.id)] = state
+        initial_state = {
+            "initialized": True,
+            "inputs": [False] * len(input_widgets),
+            "nodes": initial_nodes,
+        }
+        return {"version": 1, "components": components,
+                "connections": connections,
+                "input_bindings": input_bindings,
+                "output_bindings": output_bindings,
+                "initial_state": initial_state}, None
+
     def _add_wire(self, source, destination):
         wire = Wire(source, destination)
         self.ui.graphicsView.scene.addItem(wire)
@@ -1959,14 +2186,44 @@ class VentanaInicial(QMainWindow):
         if not selected:
             QMessageBox.information(self, "Crear módulo", "Selecciona los componentes que quieres convertir en módulo.")
             return
+        chosen_widgets = {graphic.widg for graphic in selected}
+        selected_edges = [(src, out_index, dst, in_index)
+                          for src in chosen_widgets
+                          for out_index, destinations in src.connections.items()
+                          for dst, in_index in destinations if dst in chosen_widgets]
+        stateful = (self._has_recursive_connections(selected_edges) or
+                    any(isinstance(widget, wdg.Module) and widget.stateful_circuit
+                        for widget in chosen_widgets))
         name, accepted = QInputDialog.getText(self, "Crear módulo", "Nombre del módulo:", text="Mi módulo")
         if not accepted or not name.strip():
             return
-        chosen_widgets = {graphic.widg for graphic in selected}
         module_inputs = sorted((w for w in chosen_widgets
-                                if isinstance(w, (wdg.Switch, wdg.Button))), key=lambda w: w.id)
+                                if isinstance(w, (wdg.Switch, wdg.Button, wdg.Clock))), key=lambda w: w.id)
         module_outputs = sorted((w for w in chosen_widgets if isinstance(w, wdg.Bulb)),
                                 key=lambda w: w.id)
+
+        if stateful:
+            circuit, error = self._build_stateful_module_circuit(
+                chosen_widgets, module_inputs, module_outputs)
+            if error:
+                QMessageBox.warning(self, "Crear módulo secuencial", error)
+                return
+            center = sum((graphic.pos() for graphic in selected), QPointF()) / len(selected)
+            module_data = {"name": name.strip(), "inputs": len(module_inputs),
+                           "outputs": len(module_outputs), "truth_table": [],
+                           "stateful_circuit": circuit}
+            for graphic in selected:
+                self.ui.graphicsView._remove_graphic(graphic)
+            module_graphic = self.crear_widget("MODULO", center, module_data)
+            self.ui.graphicsView.rebuild_connections()
+            module_path = self._save_ci_definition(name.strip(), len(module_inputs),
+                                                   len(module_outputs), [], circuit)
+            if module_path:
+                module_graphic.widg.module_path = str(module_path)
+            self.actualizar_biblioteca_ci()
+            self.statusBar().showMessage(
+                "CI secuencial creado: su red interna conserva los estados anteriores.", 6000)
+            return
 
         # Para el flujo habitual de un CI, los interruptores son entradas y las
         # bombillas seleccionadas son salidas, aunque no tengan cables externos.
@@ -2028,7 +2285,7 @@ class VentanaInicial(QMainWindow):
             return
         try:
             data = json.loads(Path(path).read_text(encoding="utf-8"))
-            if data.get("format") != "DaLogic module" or int(data.get("version", 0)) not in {1, 2}:
+            if not _supported_dmodule(data):
                 raise ValueError("No es un módulo DaLogic compatible.")
             definition = self._module_definition(data)
             module_path = str(Path(path).resolve())
@@ -2054,5 +2311,7 @@ class VentanaInicial(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(get_app_icon())
+
+    comprobar_actualizaciones()
     ventana = VentanaInicial(app)
     sys.exit(app.exec())
