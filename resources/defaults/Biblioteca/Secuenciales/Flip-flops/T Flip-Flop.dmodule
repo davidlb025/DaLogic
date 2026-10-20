@@ -1,0 +1,321 @@
+{
+  "format": "DaLogic module",
+  "version": 1.1,
+  "name": "Flip-flop T",
+  "inputs": 2,
+  "outputs": 2,
+  "delay_ms": 0,
+  "input_numbers": [
+    0,
+    1
+  ],
+  "output_numbers": [
+    0,
+    1
+  ],
+  "input_labels": [
+    "T",
+    "CLK"
+  ],
+  "output_labels": [
+    "Q",
+    "Q̅"
+  ],
+  "stateful_circuit": {
+    "version": 1,
+    "components": [
+      {
+        "id": 0,
+        "type": "NOT",
+        "inputs": 1,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 1,
+        "type": "AND",
+        "inputs": 3,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 2,
+        "type": "AND",
+        "inputs": 3,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 3,
+        "type": "NOR",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 4,
+        "type": "NOR",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 5,
+        "type": "AND",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 6,
+        "type": "AND",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 7,
+        "type": "NOR",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      },
+      {
+        "id": 8,
+        "type": "NOR",
+        "inputs": 2,
+        "outputs": 1,
+        "delay_ms": 0
+      }
+    ],
+    "connections": [
+      {
+        "source": 0,
+        "output": 0,
+        "destination": 1,
+        "input": 2
+      },
+      {
+        "source": 0,
+        "output": 0,
+        "destination": 2,
+        "input": 2
+      },
+      {
+        "source": 8,
+        "output": 0,
+        "destination": 1,
+        "input": 1
+      },
+      {
+        "source": 7,
+        "output": 0,
+        "destination": 2,
+        "input": 1
+      },
+      {
+        "source": 2,
+        "output": 0,
+        "destination": 3,
+        "input": 0
+      },
+      {
+        "source": 4,
+        "output": 0,
+        "destination": 3,
+        "input": 1
+      },
+      {
+        "source": 1,
+        "output": 0,
+        "destination": 4,
+        "input": 0
+      },
+      {
+        "source": 3,
+        "output": 0,
+        "destination": 4,
+        "input": 1
+      },
+      {
+        "source": 3,
+        "output": 0,
+        "destination": 5,
+        "input": 0
+      },
+      {
+        "source": 4,
+        "output": 0,
+        "destination": 6,
+        "input": 0
+      },
+      {
+        "source": 6,
+        "output": 0,
+        "destination": 7,
+        "input": 0
+      },
+      {
+        "source": 8,
+        "output": 0,
+        "destination": 7,
+        "input": 1
+      },
+      {
+        "source": 5,
+        "output": 0,
+        "destination": 8,
+        "input": 0
+      },
+      {
+        "source": 7,
+        "output": 0,
+        "destination": 8,
+        "input": 1
+      }
+    ],
+    "input_bindings": [
+      {
+        "input": 0,
+        "targets": [
+          {
+            "node": 1,
+            "port": 0
+          },
+          {
+            "node": 2,
+            "port": 0
+          }
+        ]
+      },
+      {
+        "input": 1,
+        "targets": [
+          {
+            "node": 0,
+            "port": 0
+          },
+          {
+            "node": 5,
+            "port": 1
+          },
+          {
+            "node": 6,
+            "port": 1
+          }
+        ]
+      }
+    ],
+    "output_bindings": [
+      {
+        "output": 0,
+        "sources": [
+          {
+            "node": 7,
+            "port": 0
+          }
+        ]
+      },
+      {
+        "output": 1,
+        "sources": [
+          {
+            "node": 8,
+            "port": 0
+          }
+        ]
+      }
+    ],
+    "initial_state": {
+      "initialized": true,
+      "inputs": [
+        false,
+        false
+      ],
+      "nodes": {
+        "0": {
+          "enter": [
+            false
+          ],
+          "exit": [
+            true
+          ]
+        },
+        "1": {
+          "enter": [
+            false,
+            true,
+            true
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "2": {
+          "enter": [
+            false,
+            false,
+            true
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "3": {
+          "enter": [
+            false,
+            true
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "4": {
+          "enter": [
+            false,
+            false
+          ],
+          "exit": [
+            true
+          ]
+        },
+        "5": {
+          "enter": [
+            false,
+            false
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "6": {
+          "enter": [
+            true,
+            false
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "7": {
+          "enter": [
+            false,
+            true
+          ],
+          "exit": [
+            false
+          ]
+        },
+        "8": {
+          "enter": [
+            false,
+            false
+          ],
+          "exit": [
+            true
+          ]
+        }
+      }
+    }
+  }
+}

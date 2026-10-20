@@ -1,0 +1,5 @@
+DaLogic requires runFullTrust to run its existing Windows desktop application, built with Python and PySide6/Qt Widgets. The application uses standard desktop windows and file dialogs to open and save user-selected .dalogic projects, .dmodule modules and diagram, table and signal exports. It also maintains preferences, its editable module library, recovery files and error logs in the user's local application data.
+
+The application runs as the current standard user. It does not require administrator rights, a service, a driver or a privileged helper. It does not modify system settings or access other users' files as part of its functionality. Projects and circuits are not uploaded to the developer. An optional GitHub version check can be disabled in Help.
+
+runFullTrust is the only declared capability. No broadFileSystemAccess, internetClient, microphone, camera, location, contacts or other additional capability is declared. Desktop network access follows the normal full-trust Windows process model. The package preserves this model for compatibility with the current desktop editor and its file import/export workflow.

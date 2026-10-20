@@ -33,7 +33,8 @@ QMenu {
     border: 1px solid #3a485a;
     padding: 5px;
 }
-QMenu::item { padding: 7px 28px 7px 12px; border-radius: 4px; }
+QMenu::item { padding: 7px 12px 7px 10px; border-radius: 4px; }
+QMenu::right-arrow { width: 6px; height: 8px; subcontrol-origin: padding; subcontrol-position: center right; right: 3px; }
 QMenu::item:selected { background: #30445c; color: #ffffff; }
 QMenu::separator { height: 1px; background: #3a485a; margin: 5px 8px; }
 QToolBar { border: 0; border-bottom: 1px solid #303d4e; spacing: 5px; padding: 5px; }
@@ -66,6 +67,16 @@ QTabBar::tab:selected {
     font-weight: 600;
 }
 QTabBar::tab:hover:!selected { color: #e7edf6; background: #222e3c; }
+QTabBar::tear { width: 0; image: none; }
+QTabBar::scroller { width: 48px; }
+QTabBar QToolButton { background: #1c2531; color: #e7edf6; border: 0; border-left: 1px solid #303d4e; border-radius: 0; padding: 0; margin: 0; }
+QTabBar QToolButton#ScrollRightButton { border-right: 1px solid #303d4e; }
+QTabBar QToolButton:hover { background: #30445b; }
+QTabBar QToolButton:pressed { background: #385675; }
+QTabBar QToolButton:disabled { color: #758396; background: #1c2531; }
+QHeaderView { background: #202a37; color: #e7edf6; }
+QHeaderView::section, QTableCornerButton::section { background: #263342; color: #e7edf6; border: 0; border-right: 1px solid #3a485a; border-bottom: 1px solid #3a485a; padding: 4px 6px; }
+QTableView { gridline-color: #3a485a; }
 QSplitter::handle { background: #303d4e; }
 QSplitter::handle:hover { background: #526982; }
 QFrame#board { background: #101722; border: 1px solid #303d4e; }
@@ -109,6 +120,7 @@ QSpinBox::up-button, QSpinBox::down-button, QDoubleSpinBox::up-button, QDoubleSp
     border: 0;
     width: 18px;
 }
+QSpinBox::up-button:hover, QSpinBox::down-button:hover, QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover { background: #385675; }
 QLabel { color: #dce5f0; background: transparent; }
 QCheckBox, QRadioButton { color: #dce5f0; spacing: 7px; background: transparent; }
 QCheckBox::indicator, QRadioButton::indicator { width: 15px; height: 15px; }
@@ -131,3 +143,28 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal { background: transparent; }
 QToolTip { color: #f2f6fc; background: #273546; border: 1px solid #52677f; padding: 5px 7px; }
 QMessageBox { background: #1c2531; }
+
+QPushButton#componentButton { padding: 4px 8px; min-height: 20px; max-height: 30px; border-radius: 6px; text-align: center; }
+QLineEdit#ciSearch { min-height: 32px; border-radius: 9px; padding: 6px 10px; }
+QPushButton#ciNewFolder { min-height: 32px; color: #d9eaff; background: #263b52; border: 1px solid #385675; border-radius: 8px; font-weight: 600; text-align: center; }
+QPushButton#ciNewFolder:hover { background: #304b68; border-color: #6689b1; }
+QTreeWidget#ciLibraryTree { color: #e7edf6; background: #1c2531; border: 1px solid #303d4e; border-radius: 9px; outline: 0; padding: 5px; }
+QTreeWidget#ciLibraryTree::item { padding: 5px 6px; min-height: 25px; border: 0; border-radius: 0; }
+QTreeWidget#ciLibraryTree::item:hover { background: #263342; }
+QTreeWidget#ciLibraryTree::item:selected { background: #304b68; color: #ffffff; }
+QTreeWidget#ciLibraryTree::branch:selected { background: #304b68; }
+
+/* Flexible editor controls and matching insertion palettes. */
+QWidget#actionBar, QWidget#visualPaletteBody, QWidget#componentPalette { background: #1c2531; }
+QWidget#actionBar { border-bottom: 1px solid #303d4e; }
+QDockWidget::title { background: #1c2531; padding: 8px 10px; }
+QPushButton#componentButton { min-height: 24px; padding: 4px 8px; }
+QPushButton#componentButton:checked { background: #304b68; border-color: #78aef5; }
+
+/* Theme-aware arrows also work when native Windows uses a light palette. */
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow { image: url(:/images/icons/chevron-up-dark.svg); width: 10px; height: 10px; }
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow { image: url(:/images/icons/chevron-down-dark.svg); width: 10px; height: 10px; }
+QTabBar QToolButton::left-arrow { image: url(:/images/icons/chevron-left-dark.svg); width: 14px; height: 14px; }
+QTabBar QToolButton::right-arrow { image: url(:/images/icons/chevron-right-dark.svg); width: 14px; height: 14px; }
+QPushButton[portDirection="up"] { qproperty-icon: url(:/images/icons/chevron-up-dark.svg); }
+QPushButton[portDirection="down"] { qproperty-icon: url(:/images/icons/chevron-down-dark.svg); }

@@ -24,5 +24,14 @@
         <file>icons/UI.svg</file>
         <file>icons/translate.svg</file>
         <file>icons/AND.svg</file>
+        <file>icons/dalogic.ico</file>
+        <file>icons/chevron-up-dark.svg</file>
+        <file>icons/chevron-down-dark.svg</file>
+        <file>icons/chevron-left-dark.svg</file>
+        <file>icons/chevron-right-dark.svg</file>
+        <file>icons/chevron-up-light.svg</file>
+        <file>icons/chevron-down-light.svg</file>
+        <file>icons/chevron-left-light.svg</file>
+        <file>icons/chevron-right-light.svg</file>
     </qresource>
 </RCC>

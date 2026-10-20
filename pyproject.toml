@@ -1,0 +1,9 @@
+[tool.pyside6-project]
+files = [
+  "main.py", "app_runtime.py",
+  "project_io.py", "board_view.py",
+  "widgets/widgets.py", "widgets/graphics.py",
+  "widgets/native.py", "widgets/native_graphics.py", "widgets/visual.py",
+  "resources/ui/ventana1.ui", "resources/ui/config.ui", "resources/ui/credits.ui",
+  "resources/img.qrc", "resources/styles/light.qss", "resources/styles/dark.qss"
+]

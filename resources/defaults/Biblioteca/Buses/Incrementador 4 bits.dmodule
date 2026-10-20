@@ -1,0 +1,191 @@
+{
+  "format": "DaLogic module",
+  "version": 1.2,
+  "name": "Incrementador 4 bits",
+  "inputs": 1,
+  "outputs": 2,
+  "delay_ms": 0,
+  "input_numbers": [
+    0
+  ],
+  "output_numbers": [
+    0,
+    1
+  ],
+  "input_labels": [
+    "A"
+  ],
+  "output_labels": [
+    "Y",
+    "Cout"
+  ],
+  "truth_table": [
+    {
+      "inputs": [
+        0
+      ],
+      "outputs": [
+        1,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1
+      ],
+      "outputs": [
+        2,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2
+      ],
+      "outputs": [
+        3,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3
+      ],
+      "outputs": [
+        4,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4
+      ],
+      "outputs": [
+        5,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5
+      ],
+      "outputs": [
+        6,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6
+      ],
+      "outputs": [
+        7,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7
+      ],
+      "outputs": [
+        8,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8
+      ],
+      "outputs": [
+        9,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9
+      ],
+      "outputs": [
+        10,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10
+      ],
+      "outputs": [
+        11,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11
+      ],
+      "outputs": [
+        12,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12
+      ],
+      "outputs": [
+        13,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13
+      ],
+      "outputs": [
+        14,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14
+      ],
+      "outputs": [
+        15,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15
+      ],
+      "outputs": [
+        0,
+        true
+      ],
+      "time_ms": 0
+    }
+  ],
+  "input_widths": [
+    4
+  ],
+  "output_widths": [
+    4,
+    1
+  ]
+}

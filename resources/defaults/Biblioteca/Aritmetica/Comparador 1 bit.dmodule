@@ -1,0 +1,76 @@
+{
+  "format": "DaLogic module",
+  "version": 1,
+  "name": "Comparador 1 bit",
+  "inputs": 2,
+  "outputs": 3,
+  "delay_ms": 0,
+  "input_numbers": [
+    0,
+    1
+  ],
+  "output_numbers": [
+    0,
+    1,
+    2
+  ],
+  "input_labels": [
+    "A",
+    "B"
+  ],
+  "output_labels": [
+    "EQ",
+    "GT",
+    "LT"
+  ],
+  "truth_table": [
+    {
+      "inputs": [
+        false,
+        false
+      ],
+      "outputs": [
+        true,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false
+      ],
+      "outputs": [
+        false,
+        true,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true
+      ],
+      "outputs": [
+        false,
+        false,
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true
+      ],
+      "outputs": [
+        true,
+        false,
+        false
+      ],
+      "time_ms": 0
+    }
+  ]
+}

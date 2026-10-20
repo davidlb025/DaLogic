@@ -1,94 +1,78 @@
-# This file is used to ignore files which are generated
-# ----------------------------------------------------------------------------
+# Entornos y herramientas locales
+/.venv*/
+/venv/
+/env/
+/.tools/
+/.dotnet/
+# Compilaciones, instaladores y paquetes
+# El sistema de distribución es local; se conservan sus archivos en disco.
+/crear_distribucion.ps1
+/scripts/
+/DaLogic.spec
+/requirements-build.txt
+/resources/windows-version.txt
+/.github/workflows/tests.yml
+/build/
+/build-*/
+/dist/
+*.egg-info/
+*.egg
+*.msi
+*.msm
+*.msp
+*.cab
+*.wixpdb
+*.exe
+*.dll
+*.pdb
+# Datos personales: todo user/ se conserva solo en disco
+/user/
 
-*~
-*.autosave
-*.a
-*.core
-*.moc
-*.o
-*.obj
-*.orig
-*.rej
-*.so
-*.so.*
-*_pch.h.cpp
-*_resource.rc
-*.qm
-.#*
-*.*#
-core
-!core/
-tags
-.DS_Store
-.directory
-*.debug
-Makefile*
-*.prl
-*.app
-moc_*.cpp
-ui_*.h
-qrc_*.cpp
-Thumbs.db
-*.res
-*.rc
-/.qmake.cache
-/.qmake.stash
-
-# qtcreator generated files
+/Proyectos/
+/Exports/
+/QtCreatorExes/
+# Tests locales (no se publican), Python y editores
+/tests/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.qtcreator/
+.vscode/
+.idea/
+*.user
 *.pro.user*
 *.qbs.user*
-CMakeLists.txt.user*
+.DS_Store
+Thumbs.db
+desktop.ini
+# Temporales, copias antiguas y credenciales locales
+*.log
+*.log.*
+*.tmp
+*.autosave
+*.bak
+*.old
+*~
+*.swp
+*.orig
+*.rej
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key
+# Salidas antiguas fuera del destino canónico
+/resources/rc_img.py
+/resources/ui/ui_*.py
+# Se conservan .ui, .qrc, QSS, iconos, resources/compiled,
+# resources/defaults y documentación. Nada de user/ se publica.
+*.ps1
 
-# xemacs temporary files
-*.flc
-
-# Vim temporary files
-.*.swp
-
-# Visual Studio generated files
-*.ib_pdb_index
-*.idb
-*.ilk
-*.pdb
-*.sln
-*.suo
-*.vcproj
-*vcproj.*.*.user
-*.ncb
-*.sdf
-*.opensdf
-*.vcxproj
-*vcxproj.*
-
-# MinGW generated files
-*.Debug
-*.Release
-
-# Python byte code
-*.pyc
-
-# Binaries
-# --------
-*.dll
-*.exe
-
-# Directories with generated files
-.moc/
-.obj/
-.pch/
-.rcc/
-.uic/
-/build*/
-/__pycache__/
-
-# other
-
-pyproject.toml
-.qtcreator
-.vscode
-.idea
-.venv-release
-/dist/
-DaLogic.spec
-ROADMAP.md
+/crear_instaladores.py

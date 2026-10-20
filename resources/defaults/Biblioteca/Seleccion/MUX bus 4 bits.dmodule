@@ -1,0 +1,5666 @@
+{
+  "format": "DaLogic module",
+  "version": 1.2,
+  "name": "MUX bus 4 bits",
+  "inputs": 3,
+  "outputs": 1,
+  "delay_ms": 0,
+  "input_numbers": [
+    0,
+    1,
+    2
+  ],
+  "output_numbers": [
+    0
+  ],
+  "input_labels": [
+    "D0",
+    "D1",
+    "SEL"
+  ],
+  "output_labels": [
+    "Y"
+  ],
+  "truth_table": [
+    {
+      "inputs": [
+        0,
+        0,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        0,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        0,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        0,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        0,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        0,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        0,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        0,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        0,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        0,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        0,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        0,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        0,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        0,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        0,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        0,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        1,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        1,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        1,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        1,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        1,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        1,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        1,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        1,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        1,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        1,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        1,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        1,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        1,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        1,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        1,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        1,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        2,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        2,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        2,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        2,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        2,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        2,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        2,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        2,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        2,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        2,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        2,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        2,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        2,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        2,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        2,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        2,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        3,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        3,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        3,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        3,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        3,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        3,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        3,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        3,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        3,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        3,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        3,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        3,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        3,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        3,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        3,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        3,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        4,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        4,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        4,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        4,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        4,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        4,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        4,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        4,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        4,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        4,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        4,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        4,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        4,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        4,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        4,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        4,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        5,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        5,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        5,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        5,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        5,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        5,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        5,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        5,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        5,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        5,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        5,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        5,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        5,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        5,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        5,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        5,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        6,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        6,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        6,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        6,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        6,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        6,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        6,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        6,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        6,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        6,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        6,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        6,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        6,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        6,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        6,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        6,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        7,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        7,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        7,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        7,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        7,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        7,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        7,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        7,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        7,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        7,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        7,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        7,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        7,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        7,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        7,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        7,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        8,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        8,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        8,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        8,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        8,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        8,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        8,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        8,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        8,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        8,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        8,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        8,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        8,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        8,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        8,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        8,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        9,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        9,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        9,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        9,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        9,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        9,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        9,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        9,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        9,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        9,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        9,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        9,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        9,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        9,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        9,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        9,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        10,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        10,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        10,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        10,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        10,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        10,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        10,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        10,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        10,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        10,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        10,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        10,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        10,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        10,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        10,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        10,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        11,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        11,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        11,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        11,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        11,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        11,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        11,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        11,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        11,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        11,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        11,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        11,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        11,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        11,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        11,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        11,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        12,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        12,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        12,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        12,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        12,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        12,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        12,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        12,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        12,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        12,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        12,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        12,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        12,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        12,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        12,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        12,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        13,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        13,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        13,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        13,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        13,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        13,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        13,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        13,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        13,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        13,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        13,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        13,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        13,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        13,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        13,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        13,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        14,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        14,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        14,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        14,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        14,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        14,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        14,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        14,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        14,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        14,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        14,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        14,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        14,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        14,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        14,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        14,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        15,
+        false
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        15,
+        false
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        15,
+        false
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        15,
+        false
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        15,
+        false
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        15,
+        false
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        15,
+        false
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        15,
+        false
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        15,
+        false
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        15,
+        false
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        15,
+        false
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        15,
+        false
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        15,
+        false
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        15,
+        false
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        15,
+        false
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        15,
+        false
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        0,
+        true
+      ],
+      "outputs": [
+        0
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        1,
+        true
+      ],
+      "outputs": [
+        1
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        2,
+        true
+      ],
+      "outputs": [
+        2
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        3,
+        true
+      ],
+      "outputs": [
+        3
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        4,
+        true
+      ],
+      "outputs": [
+        4
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        5,
+        true
+      ],
+      "outputs": [
+        5
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        6,
+        true
+      ],
+      "outputs": [
+        6
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        7,
+        true
+      ],
+      "outputs": [
+        7
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        8,
+        true
+      ],
+      "outputs": [
+        8
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        9,
+        true
+      ],
+      "outputs": [
+        9
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        10,
+        true
+      ],
+      "outputs": [
+        10
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        11,
+        true
+      ],
+      "outputs": [
+        11
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        12,
+        true
+      ],
+      "outputs": [
+        12
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        13,
+        true
+      ],
+      "outputs": [
+        13
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        14,
+        true
+      ],
+      "outputs": [
+        14
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        0,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        1,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        2,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        3,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        4,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        5,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        6,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        7,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        8,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        9,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        10,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        11,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        12,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        13,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        14,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        15,
+        15,
+        true
+      ],
+      "outputs": [
+        15
+      ],
+      "time_ms": 0
+    }
+  ],
+  "input_widths": [
+    4,
+    4,
+    1
+  ],
+  "output_widths": [
+    4
+  ]
+}

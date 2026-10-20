@@ -1,0 +1,321 @@
+{
+  "format": "DaLogic",
+  "version": 1,
+  "name": "Semisumador",
+  "saved_at": "2026-10-18T22:31:49.540555+00:00",
+  "components": [
+    {
+      "id": 0,
+      "type": "INTERRUPTOR",
+      "position": [
+        0.0,
+        80.0
+      ],
+      "rotation": 0,
+      "mirrored": false,
+      "inputs": 0,
+      "outputs": 1,
+      "logic_inputs": [],
+      "logic_outputs": [
+        true
+      ],
+      "delay_ms": 0,
+      "delay_gates": 0,
+      "truth_table_number": 0,
+      "state": true
+    },
+    {
+      "id": 1,
+      "type": "INTERRUPTOR",
+      "position": [
+        0.0,
+        300.0
+      ],
+      "rotation": 0,
+      "mirrored": false,
+      "inputs": 0,
+      "outputs": 1,
+      "logic_inputs": [],
+      "logic_outputs": [
+        false
+      ],
+      "delay_ms": 0,
+      "delay_gates": 0,
+      "truth_table_number": 1,
+      "state": false
+    },
+    {
+      "id": 2,
+      "type": "XOR",
+      "position": [
+        380.0,
+        60.0
+      ],
+      "rotation": 0,
+      "mirrored": false,
+      "inputs": 2,
+      "outputs": 1,
+      "logic_inputs": [
+        1,
+        0
+      ],
+      "logic_outputs": [
+        true
+      ],
+      "delay_ms": 0,
+      "delay_gates": 0,
+      "truth_table_number": 2
+    },
+    {
+      "id": 3,
+      "type": "AND",
+      "position": [
+        380.0,
+        300.0
+      ],
+      "rotation": 0,
+      "mirrored": false,
+      "inputs": 2,
+      "outputs": 1,
+      "logic_inputs": [
+        1,
+        0
+      ],
+      "logic_outputs": [
+        false
+      ],
+      "delay_ms": 0,
+      "delay_gates": 0,
+      "truth_table_number": 3
+    },
+    {
+      "id": 4,
+      "type": "BOMBILLA",
+      "position": [
+        730.0,
+        60.0
+      ],
+      "rotation": 0,
+      "mirrored": false,
+      "inputs": 1,
+      "outputs": 0,
+      "logic_inputs": [
+        1
+      ],
+      "logic_outputs": [],
+      "delay_ms": 0,
+      "delay_gates": 0,
+      "truth_table_number": 0,
+      "bulb_color": null
+    },
+    {
+      "id": 5,
+      "type": "BOMBILLA",
+      "position": [
+        730.0,
+        300.0
+      ],
+      "rotation": 0,
+      "mirrored": false,
+      "inputs": 1,
+      "outputs": 0,
+      "logic_inputs": [
+        0
+      ],
+      "logic_outputs": [],
+      "delay_ms": 0,
+      "delay_gates": 0,
+      "truth_table_number": 1,
+      "bulb_color": null
+    }
+  ],
+  "visuals": [
+    {
+      "kind": "text",
+      "text": "Acarreo",
+      "color": "#70c7f4",
+      "width": 160,
+      "height": 160,
+      "font_size": 18,
+      "border_color": "#70c7f4",
+      "fill_color": null,
+      "border_width": 2.0,
+      "corner_radius": 0,
+      "font_family": "Segoe UI",
+      "font_bold": false,
+      "font_italic": false,
+      "opacity": 1.0,
+      "position": [
+        680.0,
+        240.0
+      ]
+    },
+    {
+      "kind": "text",
+      "text": "Suma",
+      "color": "#70c7f4",
+      "width": 160,
+      "height": 160,
+      "font_size": 18,
+      "border_color": "#70c7f4",
+      "fill_color": null,
+      "border_width": 2.0,
+      "corner_radius": 0,
+      "font_family": "Segoe UI",
+      "font_bold": false,
+      "font_italic": false,
+      "opacity": 1.0,
+      "position": [
+        705.0,
+        0.0
+      ]
+    },
+    {
+      "kind": "text",
+      "text": "B",
+      "color": "#70c7f4",
+      "width": 160,
+      "height": 160,
+      "font_size": 18,
+      "border_color": "#70c7f4",
+      "fill_color": null,
+      "border_width": 2.0,
+      "corner_radius": 0,
+      "font_family": "Segoe UI",
+      "font_bold": false,
+      "font_italic": false,
+      "opacity": 1.0,
+      "position": [
+        -15.0,
+        240.0
+      ]
+    },
+    {
+      "kind": "text",
+      "text": "A",
+      "color": "#70c7f4",
+      "width": 160,
+      "height": 160,
+      "font_size": 18,
+      "border_color": "#70c7f4",
+      "fill_color": null,
+      "border_width": 2.0,
+      "corner_radius": 0,
+      "font_family": "Segoe UI",
+      "font_bold": false,
+      "font_italic": false,
+      "opacity": 1.0,
+      "position": [
+        -15.0,
+        20.0
+      ]
+    }
+  ],
+  "junctions": [],
+  "endpoints": [],
+  "sections": [],
+  "wires": [
+    {
+      "src": {
+        "kind": "port",
+        "widget": 3,
+        "side": "out",
+        "index": 0
+      },
+      "dst": {
+        "kind": "port",
+        "widget": 5,
+        "side": "in",
+        "index": 0
+      },
+      "midpoints": [],
+      "midpoint_bridges": [],
+      "color": null
+    },
+    {
+      "src": {
+        "kind": "port",
+        "widget": 2,
+        "side": "out",
+        "index": 0
+      },
+      "dst": {
+        "kind": "port",
+        "widget": 4,
+        "side": "in",
+        "index": 0
+      },
+      "midpoints": [],
+      "midpoint_bridges": [],
+      "color": null
+    },
+    {
+      "src": {
+        "kind": "port",
+        "widget": 1,
+        "side": "out",
+        "index": 0
+      },
+      "dst": {
+        "kind": "port",
+        "widget": 3,
+        "side": "in",
+        "index": 1
+      },
+      "midpoints": [],
+      "midpoint_bridges": [],
+      "color": null
+    },
+    {
+      "src": {
+        "kind": "port",
+        "widget": 0,
+        "side": "out",
+        "index": 0
+      },
+      "dst": {
+        "kind": "port",
+        "widget": 3,
+        "side": "in",
+        "index": 0
+      },
+      "midpoints": [],
+      "midpoint_bridges": [],
+      "color": null
+    },
+    {
+      "src": {
+        "kind": "port",
+        "widget": 1,
+        "side": "out",
+        "index": 0
+      },
+      "dst": {
+        "kind": "port",
+        "widget": 2,
+        "side": "in",
+        "index": 1
+      },
+      "midpoints": [],
+      "midpoint_bridges": [],
+      "color": null
+    },
+    {
+      "src": {
+        "kind": "port",
+        "widget": 0,
+        "side": "out",
+        "index": 0
+      },
+      "dst": {
+        "kind": "port",
+        "widget": 2,
+        "side": "in",
+        "index": 0
+      },
+      "midpoints": [],
+      "midpoint_bridges": [],
+      "color": null
+    }
+  ]
+}

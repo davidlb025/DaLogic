@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ventana1.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,18 +17,19 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QMainWindow, QMenu, QMenuBar, QPushButton,
-    QScrollArea, QSizePolicy, QSpacerItem, QSplitter,
-    QTabWidget, QVBoxLayout, QWidget)
+    QMainWindow, QMenuBar, QPushButton, QScrollArea,
+    QSizePolicy, QSpacerItem, QSplitter, QTabWidget,
+    QVBoxLayout, QWidget)
 
 from board_view import BoardView
+from widgets.visual import ShortcutMenu
 from . import img_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(974, 484)
+        MainWindow.resize(1180, 720)
         MainWindow.setAutoFillBackground(False)
         self.actionNuevo = QAction(MainWindow)
         self.actionNuevo.setObjectName(u"actionNuevo")
@@ -148,7 +149,11 @@ class Ui_MainWindow(object):
         self.actionCrear_Seccion.setIcon(icon20)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.verticalLayoutMain = QVBoxLayout(self.centralwidget)
+        self.verticalLayoutMain.setSpacing(0)
+        self.verticalLayoutMain.setObjectName(u"verticalLayoutMain")
+        self.verticalLayoutMain.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -181,7 +186,7 @@ class Ui_MainWindow(object):
         self.splitter.setChildrenCollapsible(False)
         self.menu = QScrollArea(self.splitter)
         self.menu.setObjectName(u"menu")
-        self.menu.setMinimumSize(QSize(200, 0))
+        self.menu.setMinimumSize(QSize(180, 0))
         self.menu.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
@@ -255,7 +260,7 @@ class Ui_MainWindow(object):
         self.splitter.addWidget(self.menu)
         self.board = QFrame(self.splitter)
         self.board.setObjectName(u"board")
-        self.board.setMinimumSize(QSize(500, 0))
+        self.board.setMinimumSize(QSize(220, 0))
         self.board.setFrameShape(QFrame.Shape.StyledPanel)
         self.board.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_2 = QGridLayout(self.board)
@@ -271,18 +276,21 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.splitter)
 
+
+        self.verticalLayoutMain.addLayout(self.horizontalLayout)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 974, 22))
         self.menubar.setAutoFillBackground(False)
-        self.menuArchivo = QMenu(self.menubar)
+        self.menuArchivo = ShortcutMenu(self.menubar)
         self.menuArchivo.setObjectName(u"menuArchivo")
-        self.menuEditar = QMenu(self.menubar)
+        self.menuEditar = ShortcutMenu(self.menubar)
         self.menuEditar.setObjectName(u"menuEditar")
-        self.menuAyuda = QMenu(self.menubar)
+        self.menuAyuda = ShortcutMenu(self.menubar)
         self.menuAyuda.setObjectName(u"menuAyuda")
-        self.menuWidgets = QMenu(self.menubar)
+        self.menuWidgets = ShortcutMenu(self.menubar)
         self.menuWidgets.setObjectName(u"menuWidgets")
         MainWindow.setMenuBar(self.menubar)
 

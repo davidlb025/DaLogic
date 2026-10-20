@@ -1,32 +1,25 @@
+from resources import translate_text as tr, module_display_name, SELECTION_COLOR
 """
 graphics.py  –  Representación visual: Graphic, Port, Wire, ConfigDialog.
 """
 
 from PySide6.QtWidgets import (
     QGraphicsItem, QGraphicsEllipseItem, QGraphicsPathItem,
-    QGraphicsRectItem, QGraphicsEllipseItem as QGEllipse,
+    QGraphicsRectItem,
     QDialog, QSpinBox, QLabel, QVBoxLayout, QHBoxLayout, QPushButton,
-    QGraphicsTextItem, QGroupBox, QScrollArea, QWidget, QFileDialog,
-    QMessageBox, QColorDialog
+    QGroupBox, QScrollArea, QWidget, QLineEdit,
+    QMessageBox, QColorDialog, QMenu, QDialogButtonBox, QTabWidget, QFormLayout,
+    QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView, QStyle
 )
 from PySide6.QtCore import Qt, QPointF, QRectF
-from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont, QPainter
-import json
+from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont, QPainter, QFontMetricsF, QTransform
 import copy
 import math
+import re
 from pathlib import Path
 
 
-_LANGUAGE_TRANSLATIONS = {}
-
-
-def set_language_translations(translations):
-    global _LANGUAGE_TRANSLATIONS
-    _LANGUAGE_TRANSLATIONS = dict(translations or {})
-
-
-def translate_text(text):
-    return _LANGUAGE_TRANSLATIONS.get(text, text)
+from resources import translate_text, set_language_translations
 
 # ── Colores ───────────────────────────────────────────────────────────────────
 COLOR_PORT_IN_OFF  = QColor(105, 135, 245)
@@ -35,7 +28,7 @@ COLOR_PORT_OUT_OFF = QColor(239, 139, 126)
 COLOR_PORT_OUT_ON  = QColor(255, 205, 105)
 COLOR_WIRE_OFF     = QColor(126, 145, 166)
 COLOR_WIRE_ON      = QColor(73, 213, 151)
-COLOR_WIRE_SEL     = QColor(255, 178, 91)
+COLOR_WIRE_SEL     = SELECTION_COLOR
 
 PORT_RADIUS = 6
 BRIDGE_HALF_GAP = 6.0
@@ -70,6 +63,20 @@ def _bridge_curve(start: QPointF, incoming: QPointF,
 
 # ── Port ─────────────────────────────────────────────────────────────────────
 
+from resources import LocalizedInputDialog as QInputDialog, LocalizedFileDialog as QFileDialog
+
+
+def _delete_canvas_item(item):
+    if not item.scene() or not item.scene().views():
+        return
+    view = item.scene().views()[0]
+    owner = view.window()
+    owner._capture_history_change()
+    item.scene().clearSelection()
+    item.setSelected(True)
+    owner.eliminar_seleccion()
+    owner._capture_history_change()
+
 class Port(QGraphicsEllipseItem):
     def __init__(self, graphic: "Graphic", port_index: int, is_input: bool):
         r = PORT_RADIUS
@@ -89,25 +96,58 @@ class Port(QGraphicsEllipseItem):
         self.update_color()
 
     def update_tooltip(self):
-        from widgets.widgets import Module
+        from widgets.widgets import (Module, Splitter, Combiner, TriState,
+                                     BusInput, BusLamp, BusViewer)
         kind = translate_text("Entrada" if self.is_input else "Salida")
         if isinstance(self.graphic.widg, Module):
             numbers = (self.graphic.widg.input_numbers if self.is_input
                        else self.graphic.widg.output_numbers)
+            labels = (self.graphic.widg.input_labels if self.is_input
+                      else self.graphic.widg.output_labels)
             number = numbers[self.port_index] if self.port_index < len(numbers) else self.port_index
-            self.setToolTip(f"{kind} {number} · {self.graphic.widg.name}")
+            label = labels[self.port_index] if self.port_index < len(labels) else ""
+            display = label or str(number)
+            detail = display
+            widths = (self.graphic.widg.input_widths if self.is_input else
+                      self.graphic.widg.output_widths)
+            width = widths[self.port_index] if self.port_index < len(widths) else 1
+            suffix = f" · {width} bits" if width > 1 else ""
+            self.setToolTip(tr('{v0} {v1}{v2} · {v3}', v0=kind, v1=detail, v2=suffix, v3=module_display_name(self.graphic.widg)))
         else:
             widget = self.graphic.widg
-            self.setToolTip(f"{kind} {self.port_index} · {type(widget).__name__} {widget.id}")
+            widths = widget.input_widths if self.is_input else widget.output_widths
+            width = widths[self.port_index] if self.port_index < len(widths) else 1
+            suffix = f" · {width} bits" if width > 1 else ""
+            port_name = ""
+            labels = getattr(widget, "input_labels" if self.is_input else "output_labels", [])
+            if self.port_index < len(labels):
+                port_name = f" · {labels[self.port_index]}"
+            component_names = {BusInput: "Bus de entrada", BusLamp: "Bus de salida",
+                               BusViewer: "Visor de bus",
+                               Splitter: "Divisor de bus", Combiner: "Combinador de bus",
+                               TriState: "Controlador triestado"}
+            component_name = next((name for component, name in component_names.items()
+                                   if isinstance(widget, component)), type(widget).__name__)
+            if isinstance(widget, Splitter):
+                port_name = f" · bit {self.port_index}" if not self.is_input else " · bus"
+            elif isinstance(widget, Combiner):
+                port_name = f" · bit {self.port_index}" if self.is_input else " · bus"
+            elif isinstance(widget, TriState):
+                port_name = (" · datos" if self.is_input and self.port_index == 0 else
+                             " · enable" if self.is_input else " · bus")
+            if isinstance(widget, (BusInput, BusLamp)):
+                self.setToolTip(tr('{v0}{v1}', v0=tr(component_name), v1=suffix))
+            else:
+                self.setToolTip(tr('{v0} {v1}{v2} · {v3} {v4}{v5}', v0=kind, v1=self.port_index, v2=tr(port_name), v3=tr(component_name), v4=widget.id, v5=suffix))
 
     def update_color(self):
         widg = self.graphic.widg
         if self.is_input:
             val = widg.enter[self.port_index] if self.port_index < len(widg.enter) else False
-            col = COLOR_PORT_IN_ON if val else COLOR_PORT_IN_OFF
+            col = COLOR_PORT_IN_ON if val is not False and val != 0 and val != "Z" else COLOR_PORT_IN_OFF
         else:
             val = widg.exit[self.port_index] if self.port_index < len(widg.exit) else False
-            col = COLOR_PORT_OUT_ON if val else COLOR_PORT_OUT_OFF
+            col = COLOR_PORT_OUT_ON if val is not False and val != 0 and val != "Z" else COLOR_PORT_OUT_OFF
 
         self.setBrush(QBrush(col))
         self.setPen(QPen(col.darker(150), 1))
@@ -123,6 +163,11 @@ class Port(QGraphicsEllipseItem):
     def mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
             view = self.scene().views()[0] if self.scene().views() else None
+            if (view and hasattr(view, "toggle_probe") and
+                    e.modifiers() & Qt.ControlModifier):
+                view.toggle_probe(self)
+                e.accept()
+                return
             if view and hasattr(view, "on_port_clicked"):
                 view.on_port_clicked(self)
                 e.accept()
@@ -226,9 +271,9 @@ class MidPoint(QGraphicsEllipseItem):
 
     def _update_bridge_tooltip(self):
         messages = (
-            "Nexo · doble clic para cambiar a Puente",
-            "Puente · doble clic para cambiar al otro lado",
-            "Puente hacia el otro lado · doble clic para volver a empezar",
+            tr("Nexo · doble clic para cambiar a Puente"),
+            tr("Puente · doble clic para cambiar al otro lado"),
+            tr("Puente hacia el otro lado · doble clic para volver a empezar"),
         )
         self.setToolTip(translate_text(messages[self.bridge_mode]))
 
@@ -248,11 +293,17 @@ class MidPoint(QGraphicsEllipseItem):
         pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
         painter.setPen(pen)
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        points = self.wire._all_points()
+        points = self.wire._routed_points()
         if len(points) >= 3:
-            node = points[self.index + 1]
-            incoming = _unit_vector(node - points[self.index])
-            outgoing = _unit_vector(points[self.index + 2] - node)
+            node_pos = self.scenePos()
+            node_index = next((index for index, point in enumerate(points)
+                               if math.hypot(point.x() - node_pos.x(),
+                                             point.y() - node_pos.y()) < 0.01), None)
+            if node_index is None or node_index == 0 or node_index >= len(points) - 1:
+                return
+            node = points[node_index]
+            incoming = _unit_vector(node - points[node_index - 1])
+            outgoing = _unit_vector(points[node_index + 1] - node)
             start = QPointF(-incoming.x() * BRIDGE_HALF_GAP,
                             -incoming.y() * BRIDGE_HALF_GAP)
             end = QPointF(outgoing.x() * BRIDGE_HALF_GAP,
@@ -319,6 +370,7 @@ class Junction(QGraphicsEllipseItem):
         self.setCursor(Qt.CrossCursor)
         self._wires: list["Wire"] = []
         self._on = False
+        self._signal = False
         self.bridge_mode = MidPoint._normalize_bridge_mode(
             bridge_mode if bridge_mode is not None else (1 if bridge else 0))
         self._update_bridge_tooltip()
@@ -334,9 +386,9 @@ class Junction(QGraphicsEllipseItem):
 
     def _update_bridge_tooltip(self):
         messages = (
-            "Nexo · doble clic para cambiar a Puente",
-            "Puente · doble clic para cambiar al otro lado",
-            "Puente hacia el otro lado · doble clic para volver a empezar",
+            tr("Nexo · doble clic para cambiar a Puente"),
+            tr("Puente · doble clic para cambiar al otro lado"),
+            tr("Puente hacia el otro lado · doble clic para volver a empezar"),
         )
         self.setToolTip(translate_text(messages[self.bridge_mode]))
 
@@ -346,7 +398,7 @@ class Junction(QGraphicsEllipseItem):
     def _bridge_directions(self):
         directions = []
         for wire in self._wires:
-            points = wire._all_points()
+            points = wire._routed_points()
             if len(points) < 2:
                 continue
             if wire.src_port is self:
@@ -392,6 +444,9 @@ class Junction(QGraphicsEllipseItem):
         if self.bridge:
             pen = QPen(self._wires[0].pen()) if self._wires else QPen(self.pen())
             pen.setWidthF(self._wires[0].pen().widthF() if self._wires else 1.5)
+            if self.isSelected():
+                pen.setColor(SELECTION_COLOR)
+                pen.setWidthF(max(2, pen.widthF()))
             pen.setCapStyle(Qt.PenCapStyle.RoundCap)
             pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
             painter.setPen(pen)
@@ -403,7 +458,7 @@ class Junction(QGraphicsEllipseItem):
             painter.drawEllipse(self.rect())
 
     def _apply_style(self):
-        col = COLOR_WIRE_ON if self._on else COLOR_WIRE_OFF
+        col = SELECTION_COLOR if self.isSelected() else COLOR_WIRE_ON if self._on else COLOR_WIRE_OFF
         self.setBrush(QBrush(col))
         self.setPen(QPen(col.darker(150), 1))
         self.update()
@@ -417,6 +472,8 @@ class Junction(QGraphicsEllipseItem):
         if change == QGraphicsItem.ItemPositionHasChanged:
             for w in self._wires:
                 w.update_path()
+        if change == QGraphicsItem.ItemSelectedHasChanged:
+            self._apply_style()
         return super().itemChange(change, value)
 
     def hoverEnterEvent(self, e):
@@ -486,7 +543,12 @@ class Wire(QGraphicsPathItem):
         self.setZValue(0)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setAcceptHoverEvents(True)
-        self.setToolTip(translate_text("Clic derecho para cambiar el color del cable"))
+        width = max((endpoint.graphic.widg.output_widths[endpoint.port_index]
+                     if isinstance(endpoint, Port) and not endpoint.is_input else
+                     endpoint.graphic.widg.input_widths[endpoint.port_index]
+                     if isinstance(endpoint, Port) else 1
+                     for endpoint in (src, dst)), default=1)
+        self.setToolTip((translate_text("Clic derecho para ver las opciones del cable") + (tr(' · bus de {v0} bits', v0=width) if width > 1 else "")))
 
         self._on = False
         self._update_pen()
@@ -564,15 +626,21 @@ class Wire(QGraphicsPathItem):
     # ── apariencia ────────────────────────────────────────────────────────────
 
     def _update_pen(self):
+        bus = any(isinstance(endpoint, Port) and
+                  (endpoint.graphic.widg.output_widths[endpoint.port_index]
+                   if not endpoint.is_input else
+                   endpoint.graphic.widg.input_widths[endpoint.port_index]) > 1
+                  for endpoint in (getattr(self, "src_port", None),
+                                   getattr(self, "dst_port", None)))
         if self.isSelected():
-            col, w = COLOR_WIRE_SEL, 3
+            col, w = COLOR_WIRE_SEL, 4 if bus else 3
         elif self.custom_color is not None:
             col = self.custom_color.lighter(125) if self._on else self.custom_color
-            w = 2 if self._on else 1.5
+            w = (3.4 if self._on else 3.0) if bus else (2 if self._on else 1.5)
         elif self._on:
-            col, w = COLOR_WIRE_ON, 2
+            col, w = COLOR_WIRE_ON, 3.4 if bus else 2
         else:
-            col, w = COLOR_WIRE_OFF, 1.5
+            col, w = COLOR_WIRE_OFF, 3.0 if bus else 1.5
         self.setPen(QPen(col, w, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
         for midpoint in getattr(self, "_mid_pts", []):
             midpoint.update()
@@ -588,7 +656,7 @@ class Wire(QGraphicsPathItem):
     def show_color_editor(self):
         parent = self.scene().views()[0].window() if self.scene() and self.scene().views() else None
         dialog = QColorDialog(self.custom_color or QColor(COLOR_WIRE_OFF), parent)
-        dialog.setWindowTitle("Color del cable")
+        dialog.setWindowTitle(tr("Color del cable"))
         dialog.setOption(QColorDialog.ColorDialogOption.ShowAlphaChannel, False)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             self.set_custom_color(dialog.currentColor())
@@ -599,6 +667,63 @@ class Wire(QGraphicsPathItem):
             self._update_pen()
             for mp in self._mid_pts:
                 mp.set_active(on)
+        # A bus can change from 3 to 7 without changing its active color.
+        # Repaint the label on every signal refresh as well.
+        if self._bus_endpoint()[0] is not None:
+            self.update()
+
+    def signal_value(self):
+        from widgets.widgets import combine_driver_values
+        endpoints = getattr(self, "_network_ports", (self.src_port, self.dst_port))
+        drivers = {(endpoint.graphic.widg, endpoint.port_index):
+                   endpoint.graphic.widg.exit[endpoint.port_index]
+                   for endpoint in endpoints if isinstance(endpoint, Port) and not endpoint.is_input
+                   and endpoint.port_index < len(endpoint.graphic.widg.exit)}
+        if drivers:
+            if all(value == "Z" for value in drivers.values()):
+                return "Z"
+            return combine_driver_values(drivers, self._bus_endpoint()[1])
+        for endpoint in endpoints:
+            if isinstance(endpoint, Port) and endpoint.is_input:
+                widget = endpoint.graphic.widg
+                if endpoint.port_index < len(widget.enter):
+                    return widget.enter[endpoint.port_index]
+        return False
+
+    def _bus_endpoint(self):
+        for endpoint in getattr(self, "_network_ports", (self.dst_port, self.src_port)):
+            if isinstance(endpoint, Port):
+                widths = endpoint.graphic.widg.input_widths if endpoint.is_input else endpoint.graphic.widg.output_widths
+                if endpoint.port_index < len(widths) and widths[endpoint.port_index] > 1:
+                    return endpoint, widths[endpoint.port_index]
+        return None, 1
+
+    def boundingRect(self):
+        rect = super().boundingRect()
+        if hasattr(self, 'src_port') and self._bus_endpoint()[0] is not None and not self.path().isEmpty():
+            center = self.path().pointAtPercent(0.5)
+            width = self._bus_endpoint()[1]
+            label_width = max(110, width * 6 + 24)
+            rect = rect.united(QRectF(center.x() - label_width / 2, center.y() - 36, label_width, 32))
+        return rect
+
+    def paint(self, painter, option, widget=None):
+        super().paint(painter, option, widget)
+        endpoint, width = self._bus_endpoint()
+        if endpoint is None or self.path().isEmpty():
+            return
+        value = self.signal_value()
+        text = str(value) if value in ('X', 'Z') else f'{int(value)} · 0x{int(value):X}\n{int(value):0{width}b}'
+        center = self.path().pointAtPercent(0.5)
+        label_width = max(110, width * 6 + 24)
+        label = QRectF(center.x() - label_width / 2, center.y() - 36, label_width, 32)
+        dark = bool(self.scene() and self.scene().views() and self.scene().views()[0].theme_mode == 'dark')
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor('#101722' if dark else '#f7f9fc'))
+        painter.drawRoundedRect(label, 3, 3)
+        painter.setPen(QColor('#bfd7f6' if dark else '#354f70'))
+        painter.setFont(QFont('Consolas', 7))
+        painter.drawText(label, Qt.AlignCenter, tr(text))
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSceneHasChanged and self.scene():
@@ -619,19 +744,42 @@ class Wire(QGraphicsPathItem):
 
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:
-            self.show_color_editor()
-            e.accept()
+            e.ignore()
             return
         if e.button() == Qt.LeftButton:
             view = self.scene().views()[0] if self.scene() and self.scene().views() else None
+            if (view and hasattr(view, "toggle_probe") and
+                    e.modifiers() & Qt.ControlModifier):
+                view.toggle_probe(self)
+                e.accept()
+                return
             if view and hasattr(view, "on_wire_clicked"):
-                # Insertar punto medio donde se clicó
-                pos = e.scenePos()
-                idx = self._closest_segment(pos)
-                view.on_wire_clicked(self, pos, idx)
+                if not self.isSelected():
+                    self.scene().clearSelection()
+                    self.setSelected(True)
+                else:
+                    view.on_wire_clicked(self, e.scenePos(), self._closest_segment(e.scenePos()))
                 e.accept()
                 return
         super().mousePressEvent(e)
+
+    def contextMenuEvent(self, event):
+        self.show_context_menu(event.screenPos(), event.scenePos())
+        event.accept()
+
+    def context_menu(self, scene_pos):
+        view = self.scene().views()[0]
+        menu = QMenu(view.window())
+        menu.addAction(tr("Crear nodo"), lambda: view.on_wire_clicked(
+            self, scene_pos, self._closest_segment(scene_pos)))
+        menu.addAction(tr("Cambiar color"), self.show_color_editor)
+        menu.addAction(tr("Eliminar"), lambda: _delete_canvas_item(self))
+        return menu
+
+    def show_context_menu(self, screen_pos, scene_pos):
+        self.scene().clearSelection()
+        self.setSelected(True)
+        self.context_menu(scene_pos).exec(screen_pos)
 
     def _closest_segment(self, pos: QPointF) -> int:
         """Devuelve el índice de inserción del punto medio más cercano al click."""
@@ -670,16 +818,37 @@ class Wire(QGraphicsPathItem):
                 pts.append(p)
         return pts
 
-    def update_path(self, preview_end: QPointF | None = None):
-        pts = self._all_points()
+    def _routed_points(self, preview_end: QPointF | None = None) -> list[QPointF]:
+        anchors = self._all_points()
         if preview_end is not None:
-            pts.append(preview_end)
+            anchors.append(preview_end)
+        if len(anchors) < 2:
+            return anchors
+        view = self.scene().views()[0] if self.scene() and self.scene().views() else None
+        if not view or not getattr(view, "orthogonal_wires", False):
+            return anchors
+        routed = [anchors[0]]
+        for point in anchors[1:]:
+            previous = routed[-1]
+            if abs(point.x() - previous.x()) > 0.01 and abs(point.y() - previous.y()) > 0.01:
+                routed.append(QPointF(point.x(), previous.y()))
+            routed.append(point)
+        return routed
+
+    def update_path(self, preview_end: QPointF | None = None):
+        pts = self._routed_points(preview_end)
         if len(pts) < 2:
             self.setPath(QPainterPath())
             return
 
-        midpoint_bridges = {index + 1 for index, midpoint in enumerate(self._mid_pts)
-                            if midpoint.bridge}
+        midpoint_bridges = set()
+        for midpoint in self._mid_pts:
+            if not midpoint.bridge:
+                continue
+            midpoint_position = midpoint.scenePos()
+            midpoint_bridges.add(next((index for index, point in enumerate(pts)
+                                       if math.hypot(point.x() - midpoint_position.x(),
+                                                     point.y() - midpoint_position.y()) < 0.01), -1))
         junction_notches = set()
         if isinstance(self.src_port, Junction) and self.src_port.bridge:
             junction_notches.add(0)
@@ -762,6 +931,23 @@ class Graphic(QGraphicsItem):
 
         self._ports_in:  list[Port] = []
         self._ports_out: list[Port] = []
+        self.rotation_degrees = 0
+        self.mirrored = False
+        self.setTransformOriginPoint(self.boundingRect().center())
+
+    def _theme_is_dark(self):
+        scene = self.scene()
+        if scene and scene.views():
+            return getattr(scene.views()[0], "theme_mode", "light") == "dark"
+        return bool(scene and scene.property("theme_mode") == "dark")
+
+    def _paint_selection(self, painter, rect, radius=8):
+        if self.isSelected():
+            painter.save()
+            painter.setBrush(Qt.NoBrush)
+            painter.setPen(QPen(SELECTION_COLOR, 1.4, Qt.DashLine))
+            painter.drawRoundedRect(rect.adjusted(-3, -3, 3, 3), radius, radius)
+            painter.restore()
 
     def paint(self, painter, option, widget=None):
         pass
@@ -770,6 +956,13 @@ class Graphic(QGraphicsItem):
         if change == QGraphicsItem.ItemSceneHasChanged:
             if self.scene():
                 self.rebuild_ports()
+        if change == QGraphicsItem.ItemPositionChange and self.scene():
+            views = self.scene().views()
+            view = views[0] if views else None
+            if view and getattr(view, "snap_to_grid", False):
+                grid = getattr(view, "grid_size", 20)
+                value = QPointF(round(value.x() / grid) * grid,
+                                round(value.y() / grid) * grid)
         if change == QGraphicsItem.ItemPositionHasChanged:
             self._reposition_ports()
             for w in self.wires:
@@ -803,22 +996,62 @@ class Graphic(QGraphicsItem):
             wire.update_path()
 
     def _reposition_ports(self):
-        bRect  = self.boundingRect()
-        scale  = self.scale()
-        origin = self.scenePos()
-
-        w = bRect.width()  * scale
-        h = bRect.height() * scale
+        bRect = self.boundingRect()
+        w = bRect.width()
+        h = bRect.height()
 
         n_in = len(self._ports_in)
         for i, p in enumerate(self._ports_in):
             y = h * (i + 1) / (n_in + 1)
-            p.setPos(origin + QPointF(0, y))
+            p.setPos(self.mapToScene(QPointF(0, y)))
 
         n_out = len(self._ports_out)
         for i, p in enumerate(self._ports_out):
             y = h * (i + 1) / (n_out + 1)
-            p.setPos(origin + QPointF(w, y))
+            p.setPos(self.mapToScene(QPointF(w, y)))
+
+    def set_orientation(self, rotation=0, mirrored=False):
+        self.rotation_degrees = int(rotation) % 360
+        self.mirrored = bool(mirrored)
+        self.setTransformOriginPoint(self.boundingRect().center())
+        transform = QTransform()
+        if self.mirrored:
+            transform.scale(-1, 1)
+        self.setTransform(transform)
+        self.setRotation(self.rotation_degrees)
+        self._reposition_ports()
+        for wire in self.wires:
+            wire.update_path()
+
+    def _draw_upright_text(self, painter, rect, alignment, text):
+        """Dibuja texto sin reflejarlo ni rotarlo con el símbolo del CI."""
+        transform = self.sceneTransform()
+        origin = transform.map(QPointF(0, 0))
+        x_axis = transform.map(QPointF(1, 0)) - origin
+        y_axis = transform.map(QPointF(0, 1)) - origin
+        x_length = math.hypot(x_axis.x(), x_axis.y())
+        y_length = math.hypot(y_axis.x(), y_axis.y())
+        if not x_length or not y_length:
+            painter.drawText(rect, alignment, text)
+            return
+        a, b = x_axis.x() / x_length, x_axis.y() / x_length
+        c, d = y_axis.x() / y_length, y_axis.y() / y_length
+        determinant = a * d - b * c
+        if abs(determinant) < 1e-9:
+            painter.drawText(rect, alignment, text)
+            return
+        # Invierte solo giro y espejo. Conserva el tamaño normal del rótulo.
+        ia, ib = d / determinant, -b / determinant
+        ic, id_ = -c / determinant, a / determinant
+        center = rect.center()
+        dx = center.x() - ia * center.x() - ic * center.y()
+        dy = center.y() - ib * center.x() - id_ * center.y()
+        upright = QTransform()
+        upright.setMatrix(ia, ib, 0, ic, id_, 0, dx, dy, 1)
+        painter.save()
+        painter.setWorldTransform(upright, True)
+        painter.drawText(rect, alignment, text)
+        painter.restore()
 
     def update_port_color(self, idx: int, is_input: bool):
         """Actualiza solo el puerto indicado y los wires que salen de ÉL."""
@@ -831,7 +1064,7 @@ class Graphic(QGraphicsItem):
                 src = w.src_port
                 if isinstance(src, Port) and not src.is_input and src.port_index == idx and src.graphic is self:
                     val = self.widg.exit[idx] if idx < len(self.widg.exit) else False
-                    w.set_active(bool(val))
+                    w.set_active(val is not False and val != 0 and val != "Z")
 
     def update_all_output_wires(self):
         """Refresca el color de TODOS los wires de salida según el estado actual."""
@@ -840,15 +1073,16 @@ class Graphic(QGraphicsItem):
             if isinstance(src, Port) and not src.is_input and src.graphic is self:
                 out_idx = src.port_index
                 val = self.widg.exit[out_idx] if out_idx < len(self.widg.exit) else False
-                w.set_active(bool(val))
+                w.set_active(val is not False and val != 0 and val != "Z")
 
     def update_switch_look(self):
         self.update_port_color(0, is_input=False)
 
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:
-            self.show_config()
-            e.accept()
+            # Let the separate context-menu event open the popup, after the
+            # mouse press has returned to QGraphicsView's drag state machine.
+            e.ignore()
             return
         from widgets.widgets import Button
         if e.button() == Qt.LeftButton and isinstance(self.widg, Button):
@@ -858,6 +1092,25 @@ class Graphic(QGraphicsItem):
             e.accept()
             return
         super().mousePressEvent(e)
+
+    def contextMenuEvent(self, event):
+        self.show_context_menu(event.screenPos())
+        event.accept()
+
+    def context_menu(self):
+        view = self.scene().views()[0]
+        menu = QMenu(view.window())
+        menu.addAction(tr("Eliminar"), lambda: _delete_canvas_item(self))
+        if isinstance(self, ModuleGraphic):
+            menu.addAction(tr("Cambiar aspecto"), self.show_appearance_editor)
+        else:
+            menu.addAction(tr("Editar"), self.show_config)
+        return menu
+
+    def show_context_menu(self, screen_pos):
+        self.scene().clearSelection()
+        self.setSelected(True)
+        self.context_menu().exec(screen_pos)
 
     def mouseReleaseEvent(self, e):
         from widgets.widgets import Button
@@ -902,32 +1155,73 @@ class LogicGateGraphic(Graphic):
         super().__init__(widg, svg_path=None, scale=1.0)
 
     def _reposition_ports(self):
-        origin = self.scenePos()
-        self._position_logic_ports(self._ports_in, True, origin)
-        self._position_logic_ports(self._ports_out, False, origin)
+        self._position_logic_ports(self._ports_in, True, self)
+        self._position_logic_ports(self._ports_out, False, self)
+
+    def shape(self):
+        if self._has_many_ports():
+            path = QPainterPath()
+            path.addRoundedRect(self._linear_body_rect(), 10, 10)
+            return path
+        from widgets.widgets import Splitter, Combiner
+        if isinstance(self.widg, (Splitter, Combiner)):
+            path = QPainterPath()
+            path.addRoundedRect(QRectF(-58, -30, 116, 60), 10, 10)
+            return path
+        return super().shape()
 
     def boundingRect(self):
-        if len(self._ports_in) > 6 or len(self._ports_out) > 6:
-            return QRectF(-114, -58, 228, 116)
+        if self._has_many_ports():
+            return self._linear_body_rect().adjusted(-12, -8, 12, 8)
+        from widgets.widgets import BusInput, BusLamp
+        if isinstance(self.widg, (BusInput, BusLamp)):
+            return QRectF(-62, -42, 124, 84)
+        from widgets.widgets import Splitter, Combiner
+        if isinstance(self.widg, (Splitter, Combiner)) and not (
+                len(self._ports_in) > 6 or len(self._ports_out) > 6):
+            return QRectF(-76, -42, 152, 84)
         return QRectF(-62, -42, 124, 84)
 
+    def _has_many_ports(self):
+        return max(len(self._ports_in), len(self._ports_out)) > 6
+
+    def _linear_body_rect(self):
+        count = max(len(self._ports_in), len(self._ports_out))
+        height = max(136, count * 24 + 20)
+        return QRectF(-100, -height / 2, 200, height)
+
     @staticmethod
-    def _position_logic_ports(ports, is_input, origin):
+    def _position_logic_ports(ports, is_input, graphic):
+        from widgets.widgets import Splitter, Combiner
         count = len(ports)
-        if count > 6:
-            split = (count + 1) // 2
+        if graphic._has_many_ports():
+            x = -104 if is_input else 104
             for index, port in enumerate(ports):
-                column = 0 if index < split else 1
-                row = index if column == 0 else index - split
-                rows = split if column == 0 else count - split
-                y = -42 + 84 * (row + 1) / (rows + 1)
-                x = (-84 if column == 0 else -64) if is_input else (84 if column == 0 else 64)
-                port.setPos(origin + QPointF(x, y))
+                y = (index - (count - 1) / 2) * 24
+                port.setPos(graphic.mapToScene(QPointF(x, y)))
             return
-        x = -58 if is_input else 58
+        wide_bus_component = isinstance(graphic.widg, (Splitter, Combiner))
+        port_x = 68 if wide_bus_component else 58
+        x = -port_x if is_input else port_x
         for index, port in enumerate(ports):
             y = -28 + 56 * (index + 1) / (count + 1)
-            port.setPos(origin + QPointF(x, y))
+            port.setPos(graphic.mapToScene(QPointF(x, y)))
+
+    def _paint_port_identifiers(self, painter):
+        if not self._has_many_ports():
+            return
+        painter.save()
+        painter.setPen(QPen(QColor(190, 207, 222) if self._theme_is_dark()
+                            else QColor(72, 91, 109)))
+        font = QFont("Arial", 7, QFont.Weight.Bold)
+        painter.setFont(font)
+        for is_input, ports in ((True, self._ports_in), (False, self._ports_out)):
+            count = len(ports)
+            for index in range(count):
+                y = (index - (count - 1) / 2) * 24
+                label_rect = QRectF(-92 if is_input else 72, y - 7, 20, 14)
+                self._draw_upright_text(painter, label_rect, Qt.AlignCenter, tr(str(index + 1)))
+        painter.restore()
 
     def paint(self, painter: QPainter, option, widget=None):
         kind = type(self.widg).__name__.upper()
@@ -935,8 +1229,8 @@ class LogicGateGraphic(Graphic):
         is_delay = kind == "DELAY"
         is_button = kind == "BUTTON"
         is_clock = kind == "CLOCK"
-        view = self.scene().views()[0] if self.scene() and self.scene().views() else None
-        dark = bool(view and getattr(view, "theme_mode", "dark") == "dark")
+        is_bus_component = kind in {"BUSINPUT", "BUSLAMP", "BUSVIEWER", "SPLITTER", "COMBINER", "TRISTATE"}
+        dark = self._theme_is_dark()
         if dark:
             accent, fill, label_color = QColor(116, 174, 248), QColor(36, 50, 68), QColor(239, 245, 252)
             bubble_fill = QColor(36, 50, 68)
@@ -965,7 +1259,73 @@ class LogicGateGraphic(Graphic):
         painter.setPen(QPen(accent, 2.2, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
         painter.setBrush(QBrush(fill))
 
-        if is_switch or is_delay or is_button or is_clock:
+        if self._has_many_ports() and not is_bus_component:
+            painter.drawRoundedRect(self._linear_body_rect(), 10, 10)
+        elif is_bus_component:
+            is_screen = kind in {"BUSINPUT", "BUSLAMP", "BUSVIEWER"}
+            painter.setPen(QPen(accent, 2.2, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            painter.setBrush(QBrush(fill))
+            is_wide_bus_component = kind in {"SPLITTER", "COMBINER"}
+            half_width = 58 if is_wide_bus_component else (54 if is_screen else 48)
+            half_height = 36 if is_screen else 30
+            if self._has_many_ports():
+                half_width = self._linear_body_rect().width() / 2
+                half_height = self._linear_body_rect().height() / 2
+            painter.drawRoundedRect(QRectF(-half_width, -half_height,
+                                           half_width * 2, half_height * 2), 10, 10)
+            if is_screen:
+                title = "BUS ENTRADA" if kind == "BUSINPUT" else "BUS SALIDA"
+                value = (self.widg.value if kind == "BUSINPUT" else self.widg.enter[0])
+                if value in ("X", "Z"):
+                    number = str(value)
+                    detail = tr("{width} bits · estado {value}", width=self.widg.width, value=value)
+                else:
+                    numeric = int(value)
+                    number = str(numeric)
+                    digits = max(2, (self.widg.width + 3) // 4)
+                    detail = f"0x{numeric:0{digits}X} · {self.widg.width} bits"
+                painter.setPen(QPen(label_color))
+                painter.setFont(QFont("Arial", 8, QFont.Weight.Bold))
+                if kind != "BUSVIEWER":
+                    self._draw_upright_text(painter, QRectF(-48, -32, 96, 15), Qt.AlignCenter, tr(title))
+                screen = QRectF(-47, -27 if kind == "BUSVIEWER" else -13,
+                               94, 48 if kind == "BUSVIEWER" else 34)
+                painter.setPen(QPen(QColor(89, 113, 130) if dark else QColor(182, 197, 207), 1))
+                painter.setBrush(QBrush(QColor(20, 30, 40) if dark else QColor(227, 237, 239)))
+                painter.drawRoundedRect(screen, 5, 5)
+                number_font = QFont("Consolas", 16, QFont.Weight.Bold)
+                metrics = QFontMetricsF(number_font)
+                while metrics.horizontalAdvance(number) > 86 and number_font.pointSize() > 9:
+                    number_font.setPointSize(number_font.pointSize() - 1)
+                    metrics = QFontMetricsF(number_font)
+                painter.setPen(QPen(QColor(129, 245, 194) if dark else QColor(28, 112, 91)))
+                painter.setFont(number_font)
+                self._draw_upright_text(painter, screen.adjusted(2, 0, -2, 0), Qt.AlignCenter, tr(number))
+                painter.setPen(QPen(QColor(173, 192, 207) if dark else QColor(83, 105, 118)))
+                painter.setFont(QFont("Arial", 7, QFont.Weight.DemiBold))
+                self._draw_upright_text(painter, QRectF(-49, 22, 98, 11), Qt.AlignCenter, tr(detail))
+            else:
+                title = {"SPLITTER": "DIVISOR DE BUS",
+                         "COMBINER": "COMBINADOR DE BUS",
+                         "TRISTATE": "BUS TRIESTADO"}.get(kind, "BUS")
+                if kind == "TRISTATE":
+                    value = self.widg.exit[0]
+                    shown = value if value in ("X", "Z") else f"0x{int(value):X}"
+                elif kind == "SPLITTER":
+                    shown = f"{self.widg.width} bits → 1 bit"
+                elif kind == "COMBINER":
+                    shown = f"1 bit → {self.widg.width} bits"
+                else:
+                    shown = f"{self.widg.width} bits"
+                painter.setPen(QPen(label_color))
+                text_half_width = 54 if is_wide_bus_component else 44
+                painter.setFont(QFont("Arial", 7, QFont.Weight.Bold))
+                self._draw_upright_text(painter, QRectF(-text_half_width, -23,
+                                                        text_half_width * 2, 16), Qt.AlignCenter, tr(title))
+                painter.setFont(QFont("Consolas", 9, QFont.Weight.DemiBold))
+                self._draw_upright_text(painter, QRectF(-text_half_width, -2,
+                                                        text_half_width * 2, 22), Qt.AlignCenter, tr(shown))
+        elif is_switch or is_delay or is_button or is_clock:
             painter.drawRoundedRect(QRectF(-44, -26, 88, 52), 12, 12)
             if is_switch:
                 painter.setPen(QPen(QColor(238, 247, 255), 2.5, Qt.SolidLine, Qt.RoundCap))
@@ -1029,17 +1389,19 @@ class LogicGateGraphic(Graphic):
             label = "Δt"
         elif is_button:
             label = translate_text("PULSADO" if self.widg.state else "PULSAR")
+        elif is_bus_component:
+            label = ""
         else:
             label = kind
-        painter.setPen(QPen(label_color))
-        font = QFont()
-        font.setBold(True); font.setPointSize(9 if len(label) < 5 else 8)
-        painter.setFont(font)
-        painter.drawText(QRectF(-31, -9, 62, 18), Qt.AlignCenter, label)
-        if self.isSelected():
-            painter.setBrush(QBrush(Qt.NoBrush))
-            painter.setPen(QPen(QColor(139, 193, 255), 1.4, Qt.DashLine))
-            painter.drawRoundedRect(QRectF(-60, -40, 120, 80), 11, 11)
+        self._paint_port_identifiers(painter)
+        if label:
+            painter.setPen(QPen(label_color))
+            font = QFont()
+            font.setBold(True); font.setPointSize(9 if len(label) < 5 else 8)
+            painter.setFont(font)
+            self._draw_upright_text(painter, QRectF(-31, -9, 62, 18), Qt.AlignCenter, tr(label))
+        rect = self._linear_body_rect() if self._has_many_ports() else QRectF(-57, -37, 114, 74)
+        self._paint_selection(painter, rect, 11)
 
     def update_switch_look(self):
         self.update()
@@ -1050,82 +1412,105 @@ class ModuleGraphic(Graphic):
 
     def __init__(self, widg):
         super().__init__(widg, svg_path=None, scale=1.0)
+        self.appearance = {}
+
+    @staticmethod
+    def normalize_appearance(data):
+        if not isinstance(data, dict):
+            raise ValueError(tr("Aspecto de módulo no válido."))
+        colors = {}
+        for key in ("fill", "border", "text"):
+            if key in data:
+                if not isinstance(data[key], str) or not QColor(data[key]).isValid():
+                    raise ValueError(tr("Color de módulo no válido."))
+                colors[key] = QColor(data[key]).name()
+        if "radius" in data:
+            if type(data["radius"]) is not int or not 0 <= data["radius"] <= 24:
+                raise ValueError(tr("Radio de módulo no válido."))
+            colors["radius"] = data["radius"]
+        return colors
+
+    def set_appearance(self, data):
+        self.appearance = self.normalize_appearance(data)
+        self.update()
+
+    def show_appearance_editor(self):
+        ModuleAppearanceDialog(self).exec()
+
+    def _module_layout(self):
+        title_font = QFont()
+        title_font.setBold(True)
+        title_font.setPointSize(9)
+        port_font = QFont(title_font)
+        port_font.setPointSize(7)
+        title_metrics = QFontMetricsF(title_font)
+        port_metrics = QFontMetricsF(port_font)
+        title = module_display_name(self.widg)
+        # Wrap long multi-word titles, but always fit their longest word.
+        # Pin labels occupy their own lanes, outside the title's rectangle.
+        longest_word = max((title_metrics.horizontalAdvance(word)
+                            for word in title.split()), default=0)
+        title_width = math.ceil(max(96, longest_word + 4,
+                                   min(260, title_metrics.horizontalAdvance(title) + 4)))
+        title_height = math.ceil(title_metrics.boundingRect(
+            QRectF(0, 0, title_width, 10000), Qt.AlignCenter | Qt.TextWordWrap, title).height())
+        texts = []
+        lanes = []
+        for values, labels, numbers in (
+                (self.widg.enter, self.widg.input_labels, self.widg.input_numbers),
+                (self.widg.exit, self.widg.output_labels, self.widg.output_numbers)):
+            side = [labels[i] or str(numbers[i]) for i in range(len(values))]
+            texts.append(side)
+            lanes.append(math.ceil(max((port_metrics.horizontalAdvance(text)
+                                       for text in side), default=0)) + (18 if side else 0))
+        row_height = math.ceil(port_metrics.height()) + 10
+        height = max(72, title_height + 24, max(map(len, texts)) * row_height + 20)
+        left = -title_width / 2 - lanes[0] - 12
+        width = title_width + sum(lanes) + 24
+        body = QRectF(left, -height / 2, width, height)
+        title_rect = QRectF(-title_width / 2, -title_height / 2, title_width, title_height)
+        ports = []
+        for side, labels in enumerate(texts):
+            count = len(labels)
+            positions = []
+            for index, text in enumerate(labels):
+                y = -row_height * (count - 1) / 2 + index * row_height
+                x = body.left() if side == 0 else body.right()
+                label_x = x + 9 if side == 0 else x - lanes[1] + 9
+                rect = QRectF(label_x, y - port_metrics.height() / 2,
+                              max(0, lanes[side] - 18), port_metrics.height())
+                positions.append((QPointF(x, y), rect, text))
+            ports.append(positions)
+        return body, title_rect, title_font, port_font, ports
 
     def boundingRect(self):
-        if len(self.widg.enter) > 6 or len(self.widg.exit) > 6:
-            return QRectF(-114, -58, 228, 116)
-        return QRectF(-64, -42, 128, 84)
+        return self._module_layout()[0].adjusted(-7, -7, 7, 7)
 
     def paint(self, painter: QPainter, option, widget=None):
-        expanded = len(self.widg.enter) > 6 or len(self.widg.exit) > 6
-        rect = QRectF(-58, -48, 116, 96) if expanded else QRectF(-58, -36, 116, 72)
-        view = self.scene().views()[0] if self.scene() and self.scene().views() else None
-        dark = bool(view and getattr(view, "theme_mode", "dark") == "dark")
+        rect, title_rect, title_font, port_font, ports = self._module_layout()
+        dark = self._theme_is_dark()
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QPen(QColor(101, 151, 211) if dark else QColor(55, 105, 169), 2))
-        painter.setBrush(QBrush(QColor(36, 50, 68) if dark else QColor(242, 247, 253)))
-        painter.drawRoundedRect(rect, 10, 10)
-        painter.setPen(QPen(QColor(239, 245, 252) if dark else QColor(31, 47, 66)))
-        label_color = QColor(239, 245, 252) if dark else QColor(31, 47, 66)
-        font = QFont()
-        font.setBold(True)
-        font.setPointSize(9)
-        painter.setFont(font)
-        painter.drawText(QRectF(-36, rect.top() + 5, 72, rect.height() - 10),
-                         Qt.AlignCenter | Qt.TextWordWrap,
-                         getattr(self.widg, "name", "Módulo"))
-        painter.setPen(QPen(label_color))
-        port_font = QFont()
-        port_font.setBold(True)
-        port_font.setPointSize(7)
+        painter.setPen(QPen(QColor(self.appearance.get("border", "#6597d3" if dark else "#3769a9")), 2))
+        painter.setBrush(QBrush(QColor(self.appearance.get("fill", "#243244" if dark else "#f2f7fd"))))
+        radius = self.appearance.get("radius", 10)
+        painter.drawRoundedRect(rect, radius, radius)
+        painter.setPen(QPen(QColor(self.appearance.get("text", "#eff5fc" if dark else "#1f2f42"))))
+        painter.setFont(title_font)
+        self._draw_upright_text(painter, title_rect, Qt.AlignCenter | Qt.TextWordWrap,
+                                module_display_name(self.widg))
         painter.setFont(port_font)
-        for is_input, count, numbers in (
-                (True, len(self._ports_in), self.widg.input_numbers),
-                (False, len(self._ports_out), self.widg.output_numbers)):
-            for index in range(count):
-                if count > 6:
-                    split = (count + 1) // 2
-                    column = 0 if index < split else 1
-                    row = index if column == 0 else index - split
-                    rows = split if column == 0 else count - split
-                    y = -42 + 84 * (row + 1) / (rows + 1)
-                    if column == 0:
-                        label_rect = (QRectF(-112, y - 7, 19, 14) if is_input
-                                      else QRectF(93, y - 7, 19, 14))
-                    else:
-                        label_rect = (QRectF(-56, y - 7, 14, 14) if is_input
-                                      else QRectF(42, y - 7, 14, 14))
-                else:
-                    extent = 42 if expanded else 30
-                    y = -extent + 2 * extent * (index + 1) / (count + 1)
-                    label_rect = (QRectF(-56, y - 7, 14, 14) if is_input
-                                  else QRectF(42, y - 7, 14, 14))
-                alignment = Qt.AlignRight | Qt.AlignVCenter if is_input else Qt.AlignLeft | Qt.AlignVCenter
-                number = numbers[index] if index < len(numbers) else index
-                painter.drawText(label_rect, alignment, str(number))
+        for side, labels in enumerate(ports):
+            alignment = (Qt.AlignLeft if side == 0 else Qt.AlignRight) | Qt.AlignVCenter
+            for position, label_rect, text in labels:
+                self._draw_upright_text(painter, label_rect, alignment, text)
+        self._paint_selection(painter, rect, radius + 2)
 
     def _reposition_ports(self):
-        origin = self.scenePos()
-        self._position_module_ports(self._ports_in, True, origin)
-        self._position_module_ports(self._ports_out, False, origin)
-
-    def _position_module_ports(self, ports, is_input, origin):
-        count = len(ports)
-        if count > 6:
-            split = (count + 1) // 2
-            for i, port in enumerate(ports):
-                column = 0 if i < split else 1
-                row = i if column == 0 else i - split
-                rows = split if column == 0 else count - split
-                y = -42 + 84 * (row + 1) / (rows + 1)
-                x = (-84 if column == 0 else -64) if is_input else (84 if column == 0 else 64)
-                port.setPos(origin + QPointF(x, y))
-        else:
-            x = -64 if is_input else 64
-            extent = 42 if len(self.widg.enter) > 6 or len(self.widg.exit) > 6 else 30
-            for i, port in enumerate(ports):
-                y = -extent + 2 * extent * (i + 1) / (count + 1)
-                port.setPos(origin + QPointF(x, y))
+        layout = self._module_layout()[4]
+        for side, ports in enumerate((self._ports_in, self._ports_out)):
+            for port, (position, label_rect, text) in zip(ports, layout[side]):
+                port.setPos(self.mapToScene(position))
+                port.update_tooltip()
 
 
 # ── BulbGraphic ───────────────────────────────────────────────────────────────
@@ -1152,7 +1537,7 @@ class BulbGraphic(Graphic):
         self.widg  = widg
         self.wires: list[Wire] = []
         widg.graphic = self
-        self.setToolTip(f"Bombilla {widg.id} · clic derecho para ajustar el retardo")
+        self.setToolTip(tr('Bombilla {v0} · clic derecho → Editar para ajustar el retardo', v0=widg.id))
 
         self.setZValue(1)
         self.setFlags(
@@ -1255,7 +1640,7 @@ class BulbGraphic(Graphic):
                               rx * 2 + 6, body_bottom - (cy - ry) + 6)
         self._selection_outline = QGraphicsRectItem(outline_rect, self)
         self._selection_outline.setZValue(10)
-        self._selection_outline.setPen(QPen(QColor(139, 193, 255), 1.4, Qt.DashLine))
+        self._selection_outline.setPen(QPen(SELECTION_COLOR, 1.4, Qt.DashLine))
         self._selection_outline.setBrush(QBrush(Qt.NoBrush))
         self._selection_outline.setVisible(self.isSelected())
         self._refresh_look()
@@ -1410,7 +1795,7 @@ class BulbGraphic(Graphic):
 
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:
-            self.show_config()
+            self.show_context_menu(e.screenPos())
             e.accept()
             return
         super(Graphic, self).mousePressEvent(e)
@@ -1475,8 +1860,8 @@ def _vpoly(x: float, y: float, length: float, sw: float) -> QPolygonF:
 class DisplayGraphic(Graphic):
     """Display 7 segmentos: 7 entradas (a-g)"""
 
-    W        = 44
-    H        = 76
+    W        = 90
+    H        = 156
     SW       = 8
     M        = 0
     OVL      = 0
@@ -1533,7 +1918,7 @@ class DisplayGraphic(Graphic):
         self._selection_outline = QGraphicsRectItem(
             QRectF(-2, -2, w + 4, h + 4), self)
         self._selection_outline.setZValue(10)
-        self._selection_outline.setPen(QPen(QColor(139, 193, 255), 1.4, Qt.DashLine))
+        self._selection_outline.setPen(QPen(SELECTION_COLOR, 1.4, Qt.DashLine))
         self._selection_outline.setBrush(QBrush(Qt.NoBrush))
         self._selection_outline.setVisible(self.isSelected())
         self._refresh_look()
@@ -1551,7 +1936,12 @@ class DisplayGraphic(Graphic):
                       self.W + self.PORT_GAP + 4, self.H + 4)
 
     def paint(self, painter, option, widget=None):
-        pass
+        painter.setPen(QColor("#eff5fc" if self._theme_is_dark() else "#1f2f42"))
+        painter.setFont(QFont("Arial", 7, QFont.Weight.Bold))
+        for index, port in enumerate(self._ports_in):
+            y = self.mapFromScene(port.scenePos()).y()
+            self._draw_upright_text(painter, QRectF(-10, y - 7, 8, 14),
+                                    Qt.AlignCenter, "abcdefg"[index])
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSceneHasChanged and self.scene():
@@ -1581,32 +1971,10 @@ class DisplayGraphic(Graphic):
         self._reposition_ports()
 
     def _reposition_ports(self):
-        origin = self.scenePos()
-        sw, m, h, ovl, gap = self.SW, self.M, self.H, self.OVL, self.PORT_GAP
-        half_h = h / 2
-
-        yv_top_mid = (m + sw - ovl + half_h - sw / 2 + ovl) / 2
-        yv_bot_mid = (half_h + sw / 2 - ovl + h - m - sw - ovl) / 2
-
-        # (y, x_offset)  — dos columnas para que b/f y c/e no se solapen
-        # columna izquierda  (x = -gap + PORT_RADIUS + 2)
-        # columna derecha    (x = -gap + PORT_RADIUS + 2 + PORT_RADIUS*2 + 4)
-        xl = -gap + PORT_RADIUS + 2
-        xr = xl + PORT_RADIUS * 2 + 4
-
-        coords = [
-            (m + sw / 2,     xl),   # a  – horizontal top    → columna izq
-            (yv_top_mid,     xr),   # b  – vertical top-right → columna der
-            (yv_bot_mid,     xr),   # c  – vertical bot-right → columna der
-            (h - m - sw / 2, xl),   # d  – horizontal bottom  → columna izq
-            (yv_bot_mid,     xl),   # e  – vertical bot-left  → columna izq
-            (yv_top_mid,     xl),   # f  – vertical top-left  → columna izq
-            (half_h,         xl),   # g  – horizontal middle  → columna izq
-        ]
-
-        for i, p in enumerate(self._ports_in):
-            y, x = coords[i]
-            p.setPos(origin + QPointF(x, y))
+        x = -self.PORT_GAP + PORT_RADIUS + 2
+        for index, port in enumerate(self._ports_in):
+            y = 12 + 22 * index
+            port.setPos(self.mapToScene(QPointF(x, y)))
 
     def update_port_color(self, idx: int, is_input: bool):
         if 0 <= idx < len(self._ports_in):
@@ -1623,7 +1991,7 @@ class DisplayGraphic(Graphic):
 
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:
-            self.show_config()
+            self.show_context_menu(e.screenPos())
             e.accept()
             return
         super(Graphic, self).mousePressEvent(e)
@@ -1645,7 +2013,7 @@ class ColorPickerButton(QPushButton):
         self._refresh_swatch()
 
     def _refresh_swatch(self):
-        self.setText(self.color.name().upper())
+        self.setText(tr(self.color.name().upper()))
         text_color = "#101820" if self.color.lightness() > 140 else "#ffffff"
         self.setStyleSheet(
             f"QPushButton {{ background-color: {self.color.name()}; "
@@ -1654,7 +2022,7 @@ class ColorPickerButton(QPushButton):
             "QPushButton:hover { border: 2px solid #2684ff; }")
 
     def choose_color(self):
-        color = QColorDialog.getColor(self.color, self, "Elegir color")
+        color = QColorDialog.getColor(self.color, self, tr("Elegir color"))
         if color.isValid():
             self.color = color
             self._refresh_swatch()
@@ -1665,56 +2033,96 @@ class ColorPickerButton(QPushButton):
 class ConfigDialog(QDialog):
 
     def __init__(self, graphic: Graphic, parent=None):
+        if parent is None and graphic.scene() and graphic.scene().views():
+            parent = graphic.scene().views()[0].window()
         super().__init__(parent)
         self.graph = graphic
         self.widg  = graphic.widg
 
-        from widgets.widgets import Module, Switch, Button, Clock, Bulb, Display, Delay
+        from widgets.widgets import Module, Switch, Button, Clock, Bulb, Display, Delay, BusViewer
+        self._is_module = isinstance(self.widg, Module)
+        if self._is_module:
+            self._build_module_editor()
+            return
         if isinstance(self.widg, Module):
             component_name = self.widg.name
         else:
             component_name = next((label for kind, label in (
                 (Switch, "Interruptor"), (Button, "Botón"), (Bulb, "Bombilla"),
-                (Clock, "Reloj"), (Display, "Display"), (Delay, "RETARDO"))
+                (Clock, "Reloj"), (Display, "Display"), (Delay, "RETARDO"),
+                (BusViewer, "Visor de bus"))
                 if isinstance(self.widg, kind)), type(self.widg).__name__)
-        self.setWindowTitle(f"Editar {component_name} {self.widg.id}")
+        self.setWindowTitle(tr('Editar {v0} {v1}', v0=(component_name if isinstance(self.widg, Module) else tr(component_name)), v1=self.widg.id))
         self.setMinimumWidth(340)
 
         lay = QVBoxLayout()
+        from widgets.widgets import Module, BusInput, BusLamp, BusViewer, Splitter, Combiner, TriState
+        self.bus_width_field = None
+        self.bus_value_field = None
+        if isinstance(self.widg, (BusInput, BusLamp, Splitter, Combiner, TriState)):
+            group = QGroupBox(tr("Configuración del bus"), self)
+            bus_layout = QVBoxLayout(group)
+            width_row = QHBoxLayout()
+            width_row.addWidget(QLabel(tr("Ancho:"), group))
+            self.bus_width_field = QSpinBox(group)
+            self.bus_width_field.setRange(2, 32)
+            self.bus_width_field.setSuffix(tr(" bits"))
+            self.bus_width_field.setValue(self.widg.width)
+            width_row.addWidget(self.bus_width_field)
+            bus_layout.addLayout(width_row)
+            if isinstance(self.widg, BusInput):
+                value_row = QHBoxLayout()
+                value_row.addWidget(QLabel(tr("Valor decimal:"), group))
+                self.bus_value_field = QLineEdit(str(self.widg.value), group)
+                self.bus_value_field.setPlaceholderText(tr("0 o 0xFF"))
+                value_row.addWidget(self.bus_value_field)
+                bus_layout.addLayout(value_row)
+            lay.addWidget(group)
 
         if self.widg.can_set_enter():
             self.sp_in = QSpinBox(self)
             self.sp_in.setRange(self.widg.min_enter, 8)
             self.sp_in.setValue(max(self.widg.min_enter, len(self.widg.enter)))
-            self.sp_in.setToolTip("Cambia el número de entradas de este componente")
+            self.sp_in.setToolTip(tr("Cambia el número de entradas de este componente"))
             self.sp_in.valueChanged.connect(self._set_input_count)
             row = QHBoxLayout()
-            row.addWidget(QLabel("Número de entradas:"))
+            row.addWidget(QLabel(tr("Número de entradas:")))
             row.addWidget(self.sp_in)
             lay.addLayout(row)
 
         if isinstance(self.widg, Clock):
             interval_layout = QHBoxLayout()
-            interval_layout.addWidget(QLabel("Intervalo de cambio:"))
+            interval_layout.addWidget(QLabel(tr("Intervalo de cambio:")))
             self.sp_clock_interval = QSpinBox(self)
             self.sp_clock_interval.setRange(10, 60000)
             self.sp_clock_interval.setValue(self.widg.interval_ms)
-            self.sp_clock_interval.setSuffix(" ms")
+            self.sp_clock_interval.setSuffix(tr(" ms"))
             interval_layout.addWidget(self.sp_clock_interval)
             lay.addLayout(interval_layout)
+        elif isinstance(self.widg, BusViewer):
+            lay.addWidget(QLabel(tr("El visor se adapta automáticamente al cable conectado."), self))
         else:
             delay_layout = QHBoxLayout()
-            delay_layout.addWidget(QLabel("Retardo de señal (ms):"))
+            delay_layout.addWidget(QLabel(tr("Retardo de señal (ms):")))
             self.sp_delay = QSpinBox(self)
             self.sp_delay.setRange(0, 10000)
             self.sp_delay.setValue(self.widg.delay_ms)
-            self.sp_delay.setSuffix(" ms")
+            self.sp_delay.setSuffix(tr(" ms"))
             delay_layout.addWidget(self.sp_delay)
             lay.addLayout(delay_layout)
+            gate_delay_layout = QHBoxLayout()
+            gate_delay_layout.addWidget(QLabel(tr("Retraso de cálculo:")))
+            self.sp_delay_gates = QSpinBox(self)
+            self.sp_delay_gates.setRange(0, 10000)
+            self.sp_delay_gates.setValue(self.widg.delay_gates)
+            self.sp_delay_gates.setToolTip(
+                tr("Añade etapas de cálculo antes de propagar el resultado."))
+            gate_delay_layout.addWidget(self.sp_delay_gates)
+            lay.addLayout(gate_delay_layout)
 
         self.segment_color_fields = []
         if isinstance(self.widg, Display):
-            group = QGroupBox("Color de cada segmento encendido", self)
+            group = QGroupBox(tr("Color de cada segmento encendido"), self)
             group_layout = QVBoxLayout(group)
             names = ("a · superior", "b · superior derecha", "c · inferior derecha",
                      "d · inferior", "e · inferior izquierda", "f · superior izquierda",
@@ -1722,7 +2130,7 @@ class ConfigDialog(QDialog):
             saved_colors = getattr(self.widg, "segment_colors", [None] * 7)
             for index, name in enumerate(names):
                 row = QHBoxLayout()
-                row.addWidget(QLabel(name, group), 1)
+                row.addWidget(QLabel(tr(name), group), 1)
                 color = (saved_colors[index] if index < len(saved_colors) and saved_colors[index]
                          else COLOR_SEG_ON)
                 picker = ColorPickerButton(color, group)
@@ -1732,80 +2140,245 @@ class ConfigDialog(QDialog):
             lay.addWidget(group)
             self.resize(360, 470)
 
-        self.input_number_fields = []
-        self.output_number_fields = []
-        from widgets.widgets import Module
-        if isinstance(self.widg, Module):
-            group = QGroupBox("Número visible de cada puerto")
-            group_layout = QVBoxLayout(group)
-            scroll = QScrollArea(group)
-            scroll.setWidgetResizable(True)
-            contents = QWidget()
-            number_layout = QVBoxLayout(contents)
-            number_layout.setContentsMargins(4, 4, 4, 4)
-            number_layout.setSpacing(3)
-            for title, numbers, fields in (
-                    ("Entradas", self.widg.input_numbers, self.input_number_fields),
-                    ("Salidas", self.widg.output_numbers, self.output_number_fields)):
-                heading = QLabel(title, contents)
-                heading.setStyleSheet("font-weight: 600; padding-top: 3px;")
-                number_layout.addWidget(heading)
-                for index, number in enumerate(numbers):
-                    row = QHBoxLayout()
-                    row.addWidget(QLabel(f"{title[:-1]} · pin {index + 1}", contents))
-                    value = QSpinBox(contents)
-                    value.setRange(0, 99)
-                    value.setValue(number)
-                    value.setFixedWidth(68)
-                    row.addWidget(value)
-                    number_layout.addLayout(row)
-                    fields.append(value)
-            self._connect_unique_fields(self.input_number_fields)
-            self._connect_unique_fields(self.output_number_fields)
-            number_layout.addStretch(1)
-            scroll.setWidget(contents)
-            scroll.setFixedHeight(min(180, max(80, 30 * (len(self.input_number_fields)
-                                                        + len(self.output_number_fields) + 2))))
-            group_layout.addWidget(scroll)
-            lay.addWidget(group)
-            self.resize(320, 360)
-
-        btn_lay = QHBoxLayout()
-        if isinstance(self.widg, Module):
-            save_ci = QPushButton("Guardar CI")
-            save_ci.clicked.connect(self._save_module)
-            btn_lay.addWidget(save_ci)
-        ok  = QPushButton("Guardar");   ok.clicked.connect(self._apply_config)
-        can = QPushButton("Cancelar"); can.clicked.connect(self.reject)
-        btn_lay.addWidget(ok); btn_lay.addWidget(can)
-        lay.addLayout(btn_lay)
+        self.module_name_field = None
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel, self)
+        buttons.accepted.connect(self._apply_config)
+        buttons.rejected.connect(self.reject)
+        lay.addWidget(buttons)
 
         self.setLayout(lay)
 
-    @staticmethod
-    def _connect_unique_fields(fields):
-        previous = [field.value() for field in fields]
-        for index, field in enumerate(fields):
-            def keep_unique(value, edited=index, values=fields, old=previous):
-                duplicate = next((other for other, candidate in enumerate(values)
-                                  if other != edited and candidate.value() == value), None)
-                if duplicate is not None:
-                    values[duplicate].blockSignals(True)
-                    values[duplicate].setValue(old[edited])
-                    values[duplicate].blockSignals(False)
-                old[:] = [candidate.value() for candidate in values]
-            field.valueChanged.connect(keep_unique)
+    def _build_module_editor(self):
+        self.setWindowTitle(tr('Editar {v0} {v1}', v0=self.widg.name, v1=self.widg.id))
+        self.setMinimumSize(520, 420)
+        self.resize(640, 520)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(12)
+        form = QFormLayout()
+        self.module_name_field = QLineEdit(self.widg.name, self)
+        self.module_name_field.setMaxLength(120)
+        form.addRow(tr("Nombre del módulo:"), self.module_name_field)
+        layout.addLayout(form)
+        self.module_tabs = QTabWidget(self)
+        layout.addWidget(self.module_tabs, 1)
 
-    def _apply_module_ports(self):
-        self.widg.set_port_numbers(
-            [field.value() for field in self.input_number_fields],
-            [field.value() for field in self.output_number_fields])
-        for fields, values in ((self.input_number_fields, self.widg.input_numbers),
-                               (self.output_number_fields, self.widg.output_numbers)):
-            for field, value in zip(fields, values):
-                field.blockSignals(True)
-                field.setValue(value)
-                field.blockSignals(False)
+        labels_page = QWidget(self)
+        labels_layout = QVBoxLayout(labels_page)
+        help_text = QLabel(tr("Edita las etiquetas y usa Subir o Bajar para ordenar los puertos de arriba abajo. Los cables conservan su conexión."), labels_page)
+        help_text.setWordWrap(True)
+        labels_layout.addWidget(help_text)
+        columns = QHBoxLayout()
+        self.input_labels_table = self._port_labels_table(columns, "Entradas", self.widg.input_labels, self.widg.input_widths)
+        self.output_labels_table = self._port_labels_table(columns, "Salidas", self.widg.output_labels, self.widg.output_widths)
+        labels_layout.addLayout(columns, 1)
+        self.module_tabs.addTab(labels_page, tr("Etiquetas"))
+
+        appearance_page = QWidget(self)
+        appearance_layout = QVBoxLayout(appearance_page)
+        appearance_form = QFormLayout()
+        view = self.graph.scene().views()[0]
+        dark = view.theme_mode == "dark"
+        self._appearance_defaults = {"fill": "#243244" if dark else "#f2f7fd",
+                                     "border": "#6597d3" if dark else "#3769a9",
+                                     "text": "#eff5fc" if dark else "#1f2f42", "radius": 10}
+        self._initial_appearance = dict(self.graph.appearance)
+        self._reset_requested = False
+        self.colors = {}
+        for key, title in (("fill", "Fondo"), ("border", "Borde"), ("text", "Texto")):
+            picker = ColorPickerButton(self.graph.appearance.get(key, self._appearance_defaults[key]), self)
+            self.colors[key] = picker
+            appearance_form.addRow(tr(title), picker)
+        self.radius = QSpinBox(self)
+        self.radius.setRange(0, 24)
+        self.radius.setValue(self.graph.appearance.get("radius", 10))
+        appearance_form.addRow(tr("Redondeado de esquinas:"), self.radius)
+        appearance_layout.addLayout(appearance_form)
+        reset = QPushButton(tr("Restablecer aspecto"), self)
+        reset.clicked.connect(self.reset_appearance)
+        appearance_layout.addWidget(reset, 0, Qt.AlignLeft)
+        appearance_layout.addStretch(1)
+        self.module_tabs.addTab(appearance_page, tr("Aspecto"))
+
+        simulation_page = QWidget(self)
+        simulation_form = QFormLayout(simulation_page)
+        self.sp_delay = QSpinBox(self)
+        self.sp_delay.setRange(0, 10000)
+        self.sp_delay.setValue(self.widg.delay_ms)
+        self.sp_delay.setSuffix(tr(" ms"))
+        simulation_form.addRow(tr("Retardo de señal (ms):"), self.sp_delay)
+        self.sp_delay_gates = QSpinBox(self)
+        self.sp_delay_gates.setRange(0, 10000)
+        self.sp_delay_gates.setValue(self.widg.delay_gates)
+        self.sp_delay_gates.setToolTip(tr("Añade etapas de cálculo antes de propagar el resultado."))
+        simulation_form.addRow(tr("Retraso de cálculo:"), self.sp_delay_gates)
+        self.module_tabs.addTab(simulation_page, tr("Simulación"))
+
+        hint = QLabel(tr("Aceptar aplica los cambios al circuito. Guardar también actualiza el archivo .dmodule."), self)
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        source = getattr(self.widg, "module_path", None)
+        self.module_file_label = QLabel(tr("Archivo: {name}", name=Path(source).name) if source else tr("Guardar creará un archivo .dmodule en la biblioteca."), self)
+        self.module_file_label.setWordWrap(True)
+        self.module_file_label.setToolTip(str(source or ""))
+        layout.addWidget(self.module_file_label)
+        self.module_buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Save | QDialogButtonBox.Cancel, self)
+        for role, title in ((QDialogButtonBox.Ok, "Aceptar"), (QDialogButtonBox.Save, "Guardar"), (QDialogButtonBox.Cancel, "Cancelar")):
+            self.module_buttons.button(role).setText(tr(title))
+            self.module_buttons.button(role).setAutoDefault(False)
+        self.module_buttons.button(QDialogButtonBox.Ok).setDefault(True)
+        self.module_buttons.button(QDialogButtonBox.Ok).clicked.connect(self.accept)
+        self.module_buttons.button(QDialogButtonBox.Save).clicked.connect(self._save_module)
+        self.module_buttons.rejected.connect(self.reject)
+        layout.addWidget(self.module_buttons)
+
+    def _port_labels_table(self, columns, title, labels, widths):
+        group = QGroupBox(tr(title), self)
+        layout = QVBoxLayout(group)
+        table = QTableWidget(len(labels), 2, group)
+        table.setHorizontalHeaderLabels([tr("Etiqueta"), tr("Ancho")])
+        table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        table.setSelectionMode(QAbstractItemView.SingleSelection)
+        table.setMinimumHeight(80)
+        for index, label in enumerate(labels):
+            item = QTableWidgetItem(label)
+            item.setData(Qt.UserRole, index)
+            table.setItem(index, 0, item)
+            width_item = QTableWidgetItem(tr("{width} bits", width=widths[index]) if widths[index] > 1 else tr("1 bit"))
+            width_item.setFlags(width_item.flags() & ~Qt.ItemIsEditable)
+            table.setItem(index, 1, width_item)
+        layout.addWidget(table, 1)
+        actions = QHBoxLayout()
+        up = QPushButton(tr("Subir"), group)
+        down = QPushButton(tr("Bajar"), group)
+        up.setProperty("portDirection", "up")
+        down.setProperty("portDirection", "down")
+        for button in (up, down):
+            button.setAutoDefault(False)
+        actions.addWidget(up)
+        actions.addWidget(down)
+        actions.addStretch(1)
+        def update_buttons():
+            row = table.currentRow()
+            up.setEnabled(row > 0)
+            down.setEnabled(0 <= row < table.rowCount() - 1)
+        table.currentCellChanged.connect(update_buttons)
+        up.clicked.connect(lambda: self._move_port_label(table, -1))
+        down.clicked.connect(lambda: self._move_port_label(table, 1))
+        if labels:
+            table.setCurrentCell(0, 0)
+        update_buttons()
+        layout.addLayout(actions)
+        columns.addWidget(group, 1)
+        return table
+
+    @staticmethod
+    def _move_port_label(table, direction):
+        row = table.currentRow()
+        target = row + direction
+        if not 0 <= row < table.rowCount() or not 0 <= target < table.rowCount():
+            return
+        current = [table.takeItem(row, column) for column in range(table.columnCount())]
+        other = [table.takeItem(target, column) for column in range(table.columnCount())]
+        for column in range(table.columnCount()):
+            table.setItem(target, column, current[column])
+            table.setItem(row, column, other[column])
+        table.setCurrentCell(target, 0)
+
+    def reset_appearance(self):
+        self._reset_requested = True
+        for key, picker in self.colors.items():
+            picker.color = QColor(self._appearance_defaults[key])
+            picker._refresh_swatch()
+        self.radius.setValue(10)
+
+    def _module_changes(self):
+        from project_io import module_definition
+        name = self.module_name_field.text().strip()
+        if not name:
+            raise ValueError(tr("Introduce un nombre para el módulo."))
+        def ports(table, original_numbers):
+            numbers, labels = list(original_numbers), [""] * table.rowCount()
+            for row in range(table.rowCount()):
+                item = table.item(row, 0)
+                original = item.data(Qt.UserRole)
+                numbers[original] = original_numbers[row]
+                labels[original] = item.text().strip()
+            return numbers, labels
+        inputs, in_labels = ports(self.input_labels_table, self.widg.input_numbers)
+        outputs, out_labels = ports(self.output_labels_table, self.widg.output_numbers)
+        circuit = copy.deepcopy(self.widg.stateful_circuit)
+        if circuit:
+            circuit["initial_state"] = self.widg.export_stateful_state()
+        definition = module_definition(name, len(inputs), len(outputs), self.widg.truth_table,
+            self.sp_delay.value(), inputs, outputs, circuit, in_labels, out_labels,
+            self.widg.input_widths, self.widg.output_widths, "auto", self.sp_delay_gates.value())
+        chosen = {**{key: picker.color.name() for key, picker in self.colors.items()}, "radius": self.radius.value()}
+        initial = {**self._appearance_defaults, **self._initial_appearance}
+        appearance = ({} if self._reset_requested and chosen == self._appearance_defaults else
+                      dict(self._initial_appearance) if not self._reset_requested and chosen == initial else chosen)
+        if appearance:
+            definition["appearance"] = appearance
+        return definition, inputs, outputs, appearance
+
+    def _module_save_path(self, name):
+        module_path = getattr(self.widg, "module_path", None)
+        if module_path:
+            path = Path(module_path).resolve()
+            if path.suffix.lower() != ".dmodule":
+                raise ValueError(tr("El archivo de origen debe tener la extensión .dmodule."))
+            return path
+        from app_runtime import CI_LIBRARY_DIR
+        stem = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name).strip(" .") or "Modulo"
+        if re.fullmatch(r'(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?', stem, re.I):
+            stem = "_" + stem
+        path = CI_LIBRARY_DIR / (stem + ".dmodule")
+        suffix = 2
+        while path.exists():
+            path = CI_LIBRARY_DIR / f"{stem} ({suffix}).dmodule"
+            suffix += 1
+        return path
+
+    def _commit_module(self, save=False):
+        from project_io import write_json_atomic
+        try:
+            definition, inputs, outputs, appearance = self._module_changes()
+            path = self._module_save_path(definition["name"]) if save else None
+            if path is not None:
+                write_json_atomic(path, definition)
+        except (OSError, ValueError, TypeError) as error:
+            QMessageBox.warning(self, tr("No se pudo guardar el CI") if save else tr("Nombre no válido"), str(error))
+            return
+        owner = self.graph.scene().views()[0].window()
+        owner._capture_history_change()
+        self.graph.prepareGeometryChange()
+        self.widg.name = definition["name"]
+        self.widg.set_port_numbers(inputs, outputs)
+        self.widg.set_port_labels(definition.get("input_labels", []), definition.get("output_labels", []))
+        self.widg.set_delay(self.sp_delay.value())
+        self.widg.set_delay_gates(self.sp_delay_gates.value())
+        self.graph.set_appearance(appearance)
+        if path is not None:
+            self.widg.module_path = str(path.resolve())
+            from app_runtime import CI_LIBRARY_DIR
+            if path.resolve().is_relative_to(CI_LIBRARY_DIR.resolve()):
+                self.widg.module_source = "library"
+            for index, imported in enumerate(owner.imported_modules):
+                source = imported.get("module_path")
+                if source and Path(source).resolve() == path.resolve():
+                    owner.imported_modules[index] = {**definition, "module_path": str(path.resolve())}
+            owner.statusBar().showMessage(tr("Módulo guardado: {name}", name=path.name), 5000)
+        owner.actualizar_biblioteca_ci()
+        owner._capture_history_change()
+        super().accept()
+
+    def accept(self):
+        if self._is_module:
+            self._commit_module(save=False)
+        else:
+            super().accept()
 
     def _refresh_port_connections(self):
         scene = self.graph.scene()
@@ -1826,70 +2399,49 @@ class ConfigDialog(QDialog):
         self._notify_history_change()
 
     def _save_module(self):
-        from widgets.widgets import Module
-        from project_io import module_definition
-        if not isinstance(self.widg, Module):
-            return
-        self._apply_module_ports()
-        self.widg.set_delay(self.sp_delay.value())
-        module_path = getattr(self.widg, "module_path", None)
-        if module_path:
-            path = Path(module_path)
-        else:
-            library = Path(__file__).resolve().parents[1] / "user" / "Biblioteca"
-            suggested = library / f"{self.widg.name}.dmodule"
-            save, _ = QFileDialog.getSaveFileName(
-                self, "Guardar CI", str(suggested), "Módulo DaLogic (*.dmodule)")
-            if not save:
-                return
-            path = Path(save).with_suffix(".dmodule")
-        try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            stateful_circuit = copy.deepcopy(self.widg.stateful_circuit)
-            if stateful_circuit:
-                stateful_circuit["initial_state"] = self.widg.export_stateful_state()
-            definition = module_definition(
-                self.widg.name, len(self.widg.enter), len(self.widg.exit),
-                self.widg.truth_table, self.widg.delay_ms,
-                self.widg.input_numbers, self.widg.output_numbers,
-                stateful_circuit)
-            path.write_text(json.dumps(definition, ensure_ascii=False, indent=2),
-                            encoding="utf-8")
-        except (OSError, ValueError, TypeError) as exc:
-            QMessageBox.critical(self, "No se pudo guardar el CI", str(exc))
-            return
-        self.widg.module_path = str(path.resolve())
-        library = Path(__file__).resolve().parents[1] / "user" / "Biblioteca"
-        try:
-            path.resolve().relative_to(library.resolve())
-            self.widg.module_source = "library"
-        except ValueError:
-            pass
-        scene = self.graphic.scene()
-        if scene and scene.views():
-            window = scene.views()[0].window()
-            if hasattr(window, "actualizar_biblioteca_ci"):
-                window.actualizar_biblioteca_ci()
-        QMessageBox.information(self, "CI guardado", f"Se guardó {path.name}.")
+        if self._is_module:
+            self._commit_module(save=True)
 
     def _apply_config(self):
-        from widgets.widgets import Module, Display, Clock
-        if isinstance(self.widg, Module):
-            self._apply_module_ports()
-        elif self.widg.can_set_enter():
+        if self._is_module:
+            self._commit_module(save=False)
+            return
+        from widgets.widgets import Module, Display, Clock, BusInput, BusViewer
+        if self.widg.can_set_enter():
             self.widg.set_enter(self.sp_in.value())
         if isinstance(self.widg, Clock):
             self.widg.set_interval(self.sp_clock_interval.value())
             scene = self.graph.scene()
             if scene and scene.views():
                 scene.views()[0].sync_clock_timers()
-        else:
+        elif not isinstance(self.widg, BusViewer):
             self.widg.set_delay(self.sp_delay.value())
+            self.widg.set_delay_gates(self.sp_delay_gates.value())
+        if self.bus_width_field is not None:
+            width = self.bus_width_field.value()
+            if isinstance(self.widg, BusInput):
+                try:
+                    value = int(self.bus_value_field.text().strip() or "0", 0)
+                except ValueError:
+                    QMessageBox.warning(self, tr("Valor no válido"),
+                                        tr("Escribe un entero decimal o hexadecimal, por ejemplo 25 o 0x19."))
+                    return
+                self.widg.set_bus(width, value)
+            else:
+                self.widg.set_bus_width(width)
+            self._refresh_port_connections()
         if isinstance(self.widg, Display):
             self.widg.segment_colors = [picker.color.name() for picker in self.segment_color_fields]
             self.graph._refresh_look()
         self._notify_history_change()
         self.accept()
+
+class ModuleAppearanceDialog(ConfigDialog):
+    """The appearance entry point shares the module's labels and save actions."""
+    def __init__(self, graphic):
+        super().__init__(graphic, graphic.scene().views()[0].window())
+        self.module_tabs.setCurrentIndex(1)
+
 
 class BulbDelayDialog(QDialog):
     """Editor sencillo del retardo de señal de una bombilla."""
@@ -1898,21 +2450,29 @@ class BulbDelayDialog(QDialog):
         super().__init__(parent)
         self.graphic = graphic
         self.widg = graphic.widg
-        self.setWindowTitle(f"Editar Bombilla {self.widg.id}")
+        self.setWindowTitle(tr('Editar Bombilla {v0}', v0=self.widg.id))
         self.setMinimumWidth(320)
 
         layout = QVBoxLayout(self)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Retardo de señal (ms):", self))
+        row.addWidget(QLabel(tr("Retardo de señal (ms):"), self))
         self.delay = QSpinBox(self)
         self.delay.setRange(0, 10000)
         self.delay.setValue(int(self.widg.delay_ms))
-        self.delay.setSuffix(" ms")
+        self.delay.setSuffix(tr(" ms"))
         row.addWidget(self.delay)
         layout.addLayout(row)
 
+        gate_row = QHBoxLayout()
+        gate_row.addWidget(QLabel(tr("Retraso de cálculo:"), self))
+        self.delay_gates = QSpinBox(self)
+        self.delay_gates.setRange(0, 10000)
+        self.delay_gates.setValue(int(self.widg.delay_gates))
+        gate_row.addWidget(self.delay_gates)
+        layout.addLayout(gate_row)
+
         color_row = QHBoxLayout()
-        color_row.addWidget(QLabel("Color al encender:", self))
+        color_row.addWidget(QLabel(tr("Color al encender:"), self))
         self.color_picker = ColorPickerButton(
             getattr(self.widg, "bulb_color", None) or "#ffc832", self)
         color_row.addWidget(self.color_picker)
@@ -1920,9 +2480,9 @@ class BulbDelayDialog(QDialog):
 
         buttons = QHBoxLayout()
         buttons.addStretch(1)
-        save = QPushButton("Guardar", self)
+        save = QPushButton(tr("Guardar"), self)
         save.clicked.connect(self._save)
-        cancel = QPushButton("Cancelar", self)
+        cancel = QPushButton(tr("Cancelar"), self)
         cancel.clicked.connect(self.reject)
         buttons.addWidget(save)
         buttons.addWidget(cancel)
@@ -1930,6 +2490,7 @@ class BulbDelayDialog(QDialog):
 
     def _save(self):
         self.widg.set_delay(self.delay.value())
+        self.widg.set_delay_gates(self.delay_gates.value())
         self.widg.bulb_color = self.color_picker.color.name()
         self.graphic._refresh_look()
         scene = self.graphic.scene()

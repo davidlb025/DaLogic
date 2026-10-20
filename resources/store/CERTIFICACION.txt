@@ -1,0 +1,17 @@
+DaLogic is a Windows x64 desktop editor and simulator for digital logic circuits. No account, credentials, activation, purchase, external device or network connection is required for its main functionality. The user can select Spanish, Catalan or English in View > Language and light or dark mode in View > Theme.
+
+Basic test:
+1. Start DaLogic. Add two switches (INTERRUPTOR), an XOR gate and a bulb (BOMBILLA) from the Basic panel.
+2. Click the output port of each switch and then an input port of the XOR to create the two wires. Connect the XOR output to the bulb input.
+3. Double-click each switch. The bulb should light when exactly one switch is on.
+4. Save a project through File > Save, close it and reopen the .dalogic file through File > Open. Export its diagram through File > Export.
+5. Select a component and use its context menu to edit it. Selected components use blue outlines. Simulation commands are in the Simulation menu.
+6. The IC tab contains the bundled module library. Module names, folder names and port labels are user-defined content and intentionally do not translate with the interface.
+
+The submission materials include Ejemplo-Semisumador.dalogic as an optional test circuit. It is a supplementary file, not an automatic startup dependency. The main functionality can be tested using the steps above without that file.
+
+The app declares only the restricted capability runFullTrust. It uses a traditional PySide6/Qt desktop process, standard file dialogs and user-selected local files for projects, modules and exports. It does not request administrator rights, install drivers, services or browser extensions, or download executable updates.
+
+An optional HTTPS request to the GitHub releases API checks the latest published version. This can be disabled under Help > Notify about updates (the translated label may vary). This check does not upload projects, circuits or module contents. Editing and simulation work offline. Store distribution and updates of the MSIX remain managed by Microsoft Store.
+
+No advertising, usage analytics, tracking identifier, online chat, subscriptions or in-app purchases are implemented. Privacy and support information are included with the submission materials. No login or special certification test account is required.

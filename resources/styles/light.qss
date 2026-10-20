@@ -3,10 +3,18 @@ QMenuBar { background: #ffffff; border-bottom: 1px solid #dfe5ee; padding: 4px 8
 QMenuBar::item { padding: 6px 10px; border-radius: 5px; }
 QMenuBar::item:selected, QMenu::item:selected { background: #e5efff; color: #1456b8; }
 QMenu { background: #ffffff; border: 1px solid #dfe5ee; padding: 5px; }
-QMenu::item { padding: 7px 28px 7px 12px; border-radius: 4px; }
+QMenu::item { padding: 7px 12px 7px 10px; border-radius: 4px; }
+QMenu::right-arrow { width: 6px; height: 8px; subcontrol-origin: padding; subcontrol-position: center right; right: 3px; }
 QScrollArea, QTabWidget::pane { border: 0; background: #ffffff; }
 QTabBar::tab { background: transparent; padding: 9px 16px; color: #5b687a; }
 QTabBar::tab:selected { color: #1456b8; border-bottom: 3px solid #2d7ff9; font-weight: 600; }
+QTabBar::tear { width: 0; image: none; }
+QTabBar::scroller { width: 48px; }
+QTabBar QToolButton { background: #ffffff; color: #243246; border: 0; border-left: 1px solid #dfe5ee; border-radius: 0; padding: 0; margin: 0; }
+QTabBar QToolButton#ScrollRightButton { border-right: 1px solid #dfe5ee; }
+QTabBar QToolButton:hover { background: #e5efff; }
+QTabBar QToolButton:pressed { background: #dceaff; }
+QTabBar QToolButton:disabled { color: #8c98a8; background: #ffffff; }
 QPushButton { background: #ffffff; border: 1px solid #d8e0eb; border-radius: 7px; padding: 8px 10px; color: #243246; }
 QPushButton:hover { background: #edf4ff; border-color: #77aaf5; }
 QPushButton:pressed { background: #dceaff; }
@@ -16,8 +24,27 @@ QToolBar { background: #ffffff; border: 0; border-bottom: 1px solid #dfe5ee; spa
 QToolButton { border-radius: 6px; padding: 5px; }
 QToolButton:hover { background: #e5efff; }
 
-QLabel#ciSectionTitle { color: #5b687a; font-size: 11px; font-weight: 700; padding: 8px 4px 3px; }
-QLabel#ciEmptyState { color: #5b687a; padding: 2px 4px 8px; }
-QFrame#ciSeparator { background: #dfe5ee; max-height: 1px; border: 0; margin: 7px 2px; }
-QPushButton#ciModuleButton { text-align: left; }
+QPushButton#componentButton { padding: 4px 8px; min-height: 20px; max-height: 30px; border-radius: 6px; text-align: center; }
+QLineEdit#ciSearch { min-height: 32px; border-radius: 9px; padding: 6px 10px; }
+QPushButton#ciNewFolder { min-height: 32px; color: #1456b8; background: #edf4ff; border: 1px solid #d5e5fb; border-radius: 8px; font-weight: 600; text-align: center; }
+QPushButton#ciNewFolder:hover { background: #e3efff; border-color: #8db7ef; }
+QTreeWidget#ciLibraryTree { color: #243246; background: #ffffff; border: 1px solid #e3e9f1; border-radius: 9px; outline: 0; padding: 5px; }
+QTreeWidget#ciLibraryTree::item { padding: 5px 6px; min-height: 25px; border: 0; border-radius: 0; }
+QTreeWidget#ciLibraryTree::item:hover { background: #f2f6fc; }
+QTreeWidget#ciLibraryTree::item:selected { background: #e5efff; color: #1456b8; }
+QTreeWidget#ciLibraryTree::branch:selected { background: #e5efff; }
 
+/* Flexible editor controls and matching insertion palettes. */
+QWidget#actionBar, QWidget#visualPaletteBody, QWidget#componentPalette { background: #ffffff; }
+QWidget#actionBar { border-bottom: 1px solid #dfe5ee; }
+QDockWidget::title { background: #ffffff; padding: 8px 10px; }
+QPushButton#componentButton { min-height: 24px; padding: 4px 8px; }
+QPushButton#componentButton:checked { background: #e5efff; border-color: #77aaf5; }
+
+/* Theme-aware arrows also work when native Windows uses a light palette. */
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow { image: url(:/images/icons/chevron-up-light.svg); width: 10px; height: 10px; }
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow { image: url(:/images/icons/chevron-down-light.svg); width: 10px; height: 10px; }
+QTabBar QToolButton::left-arrow { image: url(:/images/icons/chevron-left-light.svg); width: 14px; height: 14px; }
+QTabBar QToolButton::right-arrow { image: url(:/images/icons/chevron-right-light.svg); width: 14px; height: 14px; }
+QPushButton[portDirection="up"] { qproperty-icon: url(:/images/icons/chevron-up-light.svg); }
+QPushButton[portDirection="down"] { qproperty-icon: url(:/images/icons/chevron-down-light.svg); }

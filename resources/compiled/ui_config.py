@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'config.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -32,7 +32,7 @@ class Ui_Form(object):
         icon = QIcon()
         icon.addFile(u":/images/icons/UI.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         __qlistwidgetitem = QListWidgetItem(self.listWidget)
-        __qlistwidgetitem.setIcon(icon);
+        __qlistwidgetitem.setIcon(icon)
         self.listWidget.setObjectName(u"listWidget")
         self.listWidget.setMaximumSize(QSize(150, 16777215))
 
@@ -169,7 +169,7 @@ class Ui_Form(object):
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
         ___qlistwidgetitem = self.listWidget.item(0)
-        ___qlistwidgetitem.setText(QCoreApplication.translate("Form", u"Interfaz", None));
+        ___qlistwidgetitem.setText(QCoreApplication.translate("Form", u"Interfaz", None))
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
         self.label.setText(QCoreApplication.translate("Form", u"UI", None))

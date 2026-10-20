@@ -1,0 +1,220 @@
+{
+  "format": "DaLogic module",
+  "version": 1,
+  "name": "Paridad par 4 bits",
+  "inputs": 4,
+  "outputs": 1,
+  "delay_ms": 0,
+  "input_numbers": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "output_numbers": [
+    0
+  ],
+  "input_labels": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "output_labels": [
+    "PAR"
+  ],
+  "truth_table": [
+    {
+      "inputs": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "outputs": [
+        true
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "outputs": [
+        false
+      ],
+      "time_ms": 0
+    }
+  ]
+}

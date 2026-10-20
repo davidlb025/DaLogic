@@ -1,0 +1,72 @@
+{
+  "schema": "DaLogic local Store listing copy; not a Partner Center import file",
+  "product_name": "DaLogic",
+  "website": "https://github.com/davidlb025/DaLogic",
+  "support_email": "davidlopezborrego025@gmail.com",
+  "suggested_category": "Education",
+  "privacy_policy_url": null,
+  "personal_data_collected_by_dalogic": false,
+  "personal_data_collection": "DaLogic does not request or collect personal information to use the editor or simulation. Project files stay local. The optional version check sends a normal HTTPS request to GitHub, which processes connection metadata under its own privacy policy.",
+  "listings": {
+    "es-ES": {
+      "language": "es",
+      "short_description": "Diseña circuitos lógicos, sigue sus señales y crea módulos reutilizables. Un espacio de trabajo local para aprender y experimentar con electrónica digital.",
+      "description": "DaLogic es un editor y simulador de circuitos lógicos digitales para aprender, diseñar y comprobar ideas. Coloca componentes en el tablero, conecta sus puertos y observa cómo cambian las señales.\n\nEmpieza con puertas AND, OR, XOR y NOT, interruptores, relojes y bombillas. Amplía tus circuitos con buses, sumadores, multiplexores, decodificadores, registros y memoria. Los componentes con muchos puertos crecen en altura para mantener las conexiones ordenadas.\n\nGuarda tus proyectos y convierte circuitos en módulos reutilizables. La biblioteca de CI organiza los módulos por carpetas; puedes cambiar sus nombres, etiquetas y orden de entradas y salidas conservando las conexiones.\n\nPara entender la simulación, pausa los relojes, avanza por pasos, añade puntos de parada e inspecciona las señales con sondas. Calcula tablas de verdad de circuitos combinacionales y exporta diagramas, tablas y capturas de señales.\n\nTrabaja con tema claro u oscuro y cambia entre español, catalán e inglés. La edición y la simulación funcionan sin conexión y no requieren una cuenta. Tus circuitos se guardan localmente. La consulta opcional de nuevas versiones se puede desactivar desde Ayuda.\n\nDaLogic no incluye anuncios, compras integradas ni suscripciones. Es una herramienta educativa de simulación lógica digital; no simula tensiones ni corrientes de circuitos analógicos.",
+      "features": [
+        "Puertas lógicas, buses de hasta 32 bits, aritmética, memoria y periféricos.",
+        "Biblioteca de módulos CI con nombres, etiquetas y orden de puertos editables.",
+        "Pausa, avance por pasos, puntos de parada y sondas de señales.",
+        "Tablas de verdad de circuitos combinacionales con hasta 16 bits de entrada.",
+        "Exportación de circuitos a PNG, PDF y SVG; tablas a XLSX y CSV, entre otros formatos.",
+        "Proyectos locales con guardado atómico y recuperación automática.",
+        "Temas claro y oscuro e interfaz en español, catalán e inglés.",
+        "Edición y simulación sin conexión, sin cuenta, anuncios ni compras integradas."
+      ],
+      "search_terms": ["circuitos lógicos", "lógica digital", "simulador", "puertas lógicas", "electrónica digital", "tabla de verdad", "educación"],
+      "whats_new": "",
+      "captions": ["Diseña y simula un semisumador con puertas, entradas y salidas.", "Trabaja con el mismo circuito en tema claro.", "Conectores ordenados en una sola columna para codificadores, decodificadores y displays.", "Organiza y reutiliza módulos de la biblioteca de circuitos integrados."],
+      "project_names": ["Semisumador", "Codificación", "Biblioteca de módulos"],
+      "system_requirements": "Windows x64, teclado y ratón. Internet solo para descargar la aplicación, consultar nuevas versiones o abrir enlaces externos."
+    },
+    "ca-ES": {
+      "language": "ca",
+      "short_description": "Dissenya circuits lògics, segueix-ne els senyals i crea mòduls reutilitzables. Un espai de treball local per aprendre i experimentar amb electrònica digital.",
+      "description": "DaLogic és un editor i simulador de circuits lògics digitals per aprendre, dissenyar i comprovar idees. Col·loca components al tauler, connecta'n els ports i observa com canvien els senyals.\n\nComença amb portes AND, OR, XOR i NOT, interruptors, rellotges i bombetes. Amplia els circuits amb busos, sumadors, multiplexors, descodificadors, registres i memòria. Els components amb molts ports creixen en alçada per mantenir les connexions ordenades.\n\nDesa els projectes i converteix circuits en mòduls reutilitzables. La biblioteca de CI organitza els mòduls per carpetes; en pots canviar els noms, les etiquetes i l'ordre de les entrades i les sortides conservant les connexions.\n\nPer entendre la simulació, pausa els rellotges, avança pas a pas, afegeix punts d'aturada i inspecciona els senyals amb sondes. Calcula taules de veritat de circuits combinacionals i exporta diagrames, taules i captures de senyals.\n\nTreballa amb el tema clar o fosc i canvia entre català, castellà i anglès. L'edició i la simulació funcionen sense connexió i no requereixen cap compte. Els circuits es desen localment. La consulta opcional de versions noves es pot desactivar des d'Ajuda.\n\nDaLogic no inclou anuncis, compres integrades ni subscripcions. És una eina educativa de simulació lògica digital; no simula tensions ni corrents de circuits analògics.",
+      "features": [
+        "Portes lògiques, busos de fins a 32 bits, aritmètica, memòria i perifèrics.",
+        "Biblioteca de mòduls CI amb noms, etiquetes i ordre de ports editables.",
+        "Pausa, avanç pas a pas, punts d'aturada i sondes de senyals.",
+        "Taules de veritat de circuits combinacionals amb fins a 16 bits d'entrada.",
+        "Exportació de circuits a PNG, PDF i SVG; taules a XLSX i CSV, entre altres formats.",
+        "Projectes locals amb desament atòmic i recuperació automàtica.",
+        "Temes clar i fosc i interfície en català, castellà i anglès.",
+        "Edició i simulació sense connexió, sense compte, anuncis ni compres integrades."
+      ],
+      "search_terms": ["circuits lògics", "lògica digital", "simulador", "portes lògiques", "electrònica digital", "taula de veritat", "educació"],
+      "whats_new": "",
+      "captions": ["Dissenya i simula un semisumador amb portes, entrades i sortides.", "Treballa amb el mateix circuit en tema clar.", "Connectors ordenats en una sola columna per a codificadors, descodificadors i displays.", "Organitza i reutilitza mòduls de la biblioteca de circuits integrats."],
+      "project_names": ["Semisumador", "Codificació", "Biblioteca de mòduls"],
+      "system_requirements": "Windows x64, teclat i ratolí. Internet només per descarregar l'aplicació, consultar versions noves o obrir enllaços externs."
+    },
+    "en-US": {
+      "language": "en",
+      "short_description": "Design logic circuits, trace their signals and create reusable modules. A local workspace for learning and experimenting with digital electronics.",
+      "description": "DaLogic is a digital logic circuit editor and simulator for learning, designing and testing ideas. Place components on the board, connect their ports and watch the signals change.\n\nStart with AND, OR, XOR and NOT gates, switches, clocks and bulbs. Expand your circuits with buses, adders, multiplexers, decoders, registers and memory. Components with many ports grow vertically to keep connections in order.\n\nSave projects and turn circuits into reusable modules. The IC library organizes modules in folders; you can change their names, labels and input and output order while preserving connections.\n\nTo understand the simulation, pause clocks, step through events, add breakpoints and inspect signals with probes. Calculate truth tables for combinational circuits and export diagrams, tables and signal recordings.\n\nWork in light or dark mode and switch between English, Spanish and Catalan. Editing and simulation work offline without an account. Your circuits are stored locally. The optional check for new releases can be disabled in Help.\n\nDaLogic has no ads, in-app purchases or subscriptions. It is an educational digital logic simulator; it does not simulate voltages or currents in analog circuits.",
+      "features": [
+        "Logic gates, buses up to 32 bits, arithmetic, memory and peripherals.",
+        "IC module library with editable names, labels and port order.",
+        "Pause, single-step simulation, breakpoints and signal probes.",
+        "Truth tables for combinational circuits with up to 16 input bits.",
+        "Export circuits to PNG, PDF and SVG; tables to XLSX and CSV, among other formats.",
+        "Local projects with atomic saving and automatic recovery.",
+        "Light and dark themes, with English, Spanish and Catalan interfaces.",
+        "Offline editing and simulation with no account, ads or in-app purchases."
+      ],
+      "search_terms": ["logic circuits", "digital logic", "simulator", "logic gates", "digital electronics", "truth table", "education"],
+      "whats_new": "",
+      "captions": ["Design and simulate a half adder with gates, inputs and outputs.", "Work with the same circuit in light mode.", "Single-column connectors for encoders, decoders and seven-segment displays.", "Organize and reuse modules from the integrated circuit library."],
+      "project_names": ["Half adder", "Encoding", "Module library"],
+      "system_requirements": "Windows x64, keyboard and mouse. Internet is only needed to download the app, check for new releases or open external links."
+    }
+  }
+}

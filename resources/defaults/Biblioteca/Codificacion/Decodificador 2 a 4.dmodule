@@ -1,0 +1,144 @@
+{
+  "format": "DaLogic module",
+  "version": 1,
+  "name": "Decodificador 2 a 4",
+  "inputs": 3,
+  "outputs": 4,
+  "delay_ms": 0,
+  "input_numbers": [
+    0,
+    1,
+    2
+  ],
+  "output_numbers": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "input_labels": [
+    "A0",
+    "A1",
+    "EN"
+  ],
+  "output_labels": [
+    "Y0",
+    "Y1",
+    "Y2",
+    "Y3"
+  ],
+  "truth_table": [
+    {
+      "inputs": [
+        false,
+        false,
+        false
+      ],
+      "outputs": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        false
+      ],
+      "outputs": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        false
+      ],
+      "outputs": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        false
+      ],
+      "outputs": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        false,
+        true
+      ],
+      "outputs": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        false,
+        true
+      ],
+      "outputs": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        false,
+        true,
+        true
+      ],
+      "outputs": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "time_ms": 0
+    },
+    {
+      "inputs": [
+        true,
+        true,
+        true
+      ],
+      "outputs": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "time_ms": 0
+    }
+  ]
+}
