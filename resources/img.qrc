@@ -33,5 +33,9 @@
         <file>icons/chevron-down-light.svg</file>
         <file>icons/chevron-left-light.svg</file>
         <file>icons/chevron-right-light.svg</file>
+        <file>icons/chevron-left-light-disabled.svg</file>
+        <file>icons/chevron-right-light-disabled.svg</file>
+        <file>icons/chevron-left-dark-disabled.svg</file>
+        <file>icons/chevron-right-dark-disabled.svg</file>
     </qresource>
 </RCC>

@@ -6,15 +6,28 @@ QMenu { background: #ffffff; border: 1px solid #dfe5ee; padding: 5px; }
 QMenu::item { padding: 7px 12px 7px 10px; border-radius: 4px; }
 QMenu::right-arrow { width: 6px; height: 8px; subcontrol-origin: padding; subcontrol-position: center right; right: 3px; }
 QScrollArea, QTabWidget::pane { border: 0; background: #ffffff; }
+QWidget#scrollAreaWidgetContents { background: #ffffff; }
 QTabBar::tab { background: transparent; padding: 9px 16px; color: #5b687a; }
 QTabBar::tab:selected { color: #1456b8; border-bottom: 3px solid #2d7ff9; font-weight: 600; }
 QTabBar::tear { width: 0; image: none; }
-QTabBar::scroller { width: 48px; }
-QTabBar QToolButton { background: #ffffff; color: #243246; border: 0; border-left: 1px solid #dfe5ee; border-radius: 0; padding: 0; margin: 0; }
-QTabBar QToolButton#ScrollRightButton { border-right: 1px solid #dfe5ee; }
-QTabBar QToolButton:hover { background: #e5efff; }
-QTabBar QToolButton:pressed { background: #dceaff; }
-QTabBar QToolButton:disabled { color: #8c98a8; background: #ffffff; }
+QTabBar { background: #ffffff; }
+QTabBar::scroller { width: 56px; }
+QTabBar QToolButton {
+    background: #f5f8fc; border: 1px solid #c5d2e2;
+    border-radius: 0; padding: 0; margin: 6px 0;
+}
+QTabBar QToolButton#ScrollLeftButton {
+    border-top-left-radius: 5px; border-bottom-left-radius: 5px;
+    border-right: 0; margin-left: 2px;
+}
+QTabBar QToolButton#ScrollRightButton {
+    border-top-right-radius: 5px; border-bottom-right-radius: 5px;
+    margin-right: 2px;
+}
+QTabBar QToolButton:hover { background: #e7f0ff; }
+QTabBar QToolButton:pressed { background: #d8e7ff; }
+QTabBar QToolButton:focus { border-color: #2d7ff9; }
+QTabBar QToolButton:disabled { background: #f5f8fc; border-color: #c5d2e2; }
 QPushButton { background: #ffffff; border: 1px solid #d8e0eb; border-radius: 7px; padding: 8px 10px; color: #243246; }
 QPushButton:hover { background: #edf4ff; border-color: #77aaf5; }
 QPushButton:pressed { background: #dceaff; }
@@ -44,7 +57,10 @@ QPushButton#componentButton:checked { background: #e5efff; border-color: #77aaf5
 /* Theme-aware arrows also work when native Windows uses a light palette. */
 QSpinBox::up-arrow, QDoubleSpinBox::up-arrow { image: url(:/images/icons/chevron-up-light.svg); width: 10px; height: 10px; }
 QSpinBox::down-arrow, QDoubleSpinBox::down-arrow { image: url(:/images/icons/chevron-down-light.svg); width: 10px; height: 10px; }
-QTabBar QToolButton::left-arrow { image: url(:/images/icons/chevron-left-light.svg); width: 14px; height: 14px; }
-QTabBar QToolButton::right-arrow { image: url(:/images/icons/chevron-right-light.svg); width: 14px; height: 14px; }
+QTabBar QToolButton::left-arrow { image: url(:/images/icons/chevron-left-light.svg); width: 16px; height: 16px; }
+QTabBar QToolButton::right-arrow { image: url(:/images/icons/chevron-right-light.svg); width: 16px; height: 16px; }
 QPushButton[portDirection="up"] { qproperty-icon: url(:/images/icons/chevron-up-light.svg); }
 QPushButton[portDirection="down"] { qproperty-icon: url(:/images/icons/chevron-down-light.svg); }
+
+QTabBar QToolButton::left-arrow:disabled { image: url(:/images/icons/chevron-left-light-disabled.svg); }
+QTabBar QToolButton::right-arrow:disabled { image: url(:/images/icons/chevron-right-light-disabled.svg); }
