@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1]
+
+- Matriz RGB y pantalla de píxeles con color de 24 bits, hasta 64 filas por 64 columnas y tamaño de píxel ajustable.
+- CPU DaLogic-8 de 8 bits con acumulador, RAM, saltos y salida de vídeo. La ROM de programa permite editar ensamblador o binario, comprobar el código y ver su codificación.
+- Programación de ROM y RAM con instrucciones definidas por el usuario y exportación de imágenes pequeñas como circuitos de puertas.
+- Paquetes Windows x64 1.2.1 y MSIX 1.2.1.0. Interfaz disponible en español, catalán e inglés.
+
 ## Actualización de la versión 1.2.0
 
 - Barra de acciones adaptable por filas y bibliotecas de componentes con cuadrícula y desplazamiento propios.

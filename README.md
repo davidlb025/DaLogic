@@ -1,8 +1,8 @@
-# DaLogic — v1.2.0
+# DaLogic — v1.2.1
 
 Editor y simulador gráfico de circuitos lógicos digitales con PySide6. Incluye puertas, buses, aritmética, memoria, periféricos y una biblioteca de 30 circuitos integrados reutilizables.
 
-[Componentes](docs/componentes-1.2.md) · [Tiempo y realimentación](docs/tiempo-y-realimentacion.md) · [Depuración y CI](docs/depuracion-y-ci.md) · [Changelog](CHANGELOG.md)
+[Componentes](docs/componentes-1.2.md) · [Programación y pantallas](docs/dalogic-8.md) · [Tiempo y realimentación](docs/tiempo-y-realimentacion.md) · [Depuración y CI](docs/depuracion-y-ci.md) · [Changelog](CHANGELOG.md)
 
 ## Edición y menús
 
@@ -21,6 +21,9 @@ En un cable, el primer clic selecciona y el segundo crea un nodo. Su menú conte
 - Puertas de 2–8 entradas, fuentes, pulsadores, relojes, retardos, bombillas y displays.
 - Buses de hasta 32 bits, splitters/combiners, visores, tri-state, señales X/Z y pulls.
 - Sumadores, restadores, comparadores, ALU, multiplexores, decodificadores, RAM, ROM, contadores y registros de desplazamiento.
+- Matriz RGB y pantalla direccionable de hasta 64 × 64 píxeles. Filas, columnas y tamaño de píxel configurables.
+- CPU DaLogic-8 y ROM de programa con editor de ensamblador y código máquina binario.
+- Ensamblador configurable y carga de binario para ROM y RAM de circuitos propios. [Programar circuitos propios](docs/arquitecturas-propias.md)
 - Biblioteca de CI organizada por carpetas, búsqueda y módulos importados.
 - CI secuenciales con memoria independiente por instancia. El nuevo formato 1.3 permite encapsular memoria nativa y buses, además de las puertas y módulos anteriores.
 - Diagnóstico de entradas libres, redes sin fuente, anchos incompatibles, conflictos tri-state y estados X.

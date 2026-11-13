@@ -2,7 +2,7 @@
 from PySide6.QtGui import QIcon, QColor
 from .compiled import img_rc  # Registers the embedded resources.
 
-APP_VERSION = "1.2.0"
+APP_VERSION = "1.2.1"
 SELECTION_COLOR = QColor("#2d7ff9")
 
 

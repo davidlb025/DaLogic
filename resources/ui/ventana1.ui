@@ -308,7 +308,6 @@
     <property name="title">
      <string>Ayuda</string>
     </property>
-    <addaction name="actionTutorial" />
     <addaction name="actionSobre_Nosotros_2" />
    </widget>
    <widget class="ShortcutMenu" name="menuWidgets">
@@ -476,15 +475,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
-   </property>
-  </action>
-  <action name="actionTutorial">
-   <property name="icon">
-    <iconset resource="../img.qrc">
-     <normaloff>:/images/icons/help.svg</normaloff>:/images/icons/help.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Tutorial</string>
    </property>
   </action>
   <action name="actionSobre_Nosotros_2">

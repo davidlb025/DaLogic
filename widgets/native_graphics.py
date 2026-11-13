@@ -1,14 +1,18 @@
 from resources import translate_text as tr
 """Named native ports, compact peripherals and editable memory."""
 from PySide6.QtCore import Qt, QRectF, QPointF
-from PySide6.QtGui import QColor, QPen, QFont, QPainterPath, QLinearGradient, QRadialGradient
+from PySide6.QtGui import (QColor, QPen, QFont, QImage, QPainter, QPainterPath,
+                           QLinearGradient, QRadialGradient)
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
                               QSpinBox, QLineEdit, QPushButton, QPlainTextEdit,
-                              QMessageBox, QCheckBox)
+                              QMessageBox, QCheckBox, QFormLayout)
 from .graphics import LogicGateGraphic
 from .native import (Native, DIPSwitch, HexKeyboard, LEDBar, LEDMatrix,
-                     Constant, PullUp, Buzzer, RGBLED, TrafficLight)
+                     Constant, PullUp, Buzzer, RGBLED, TrafficLight,
+                     CPU, PixelScreen, RGBMatrix, ProgramROM, RAM)
 from .widgets import BusInput
+from .program_editor import ProgramEditor
+from .architecture_editor import ArchitectureEditor
 
 
 from resources import LocalizedInputDialog as QInputDialog, LocalizedFileDialog as QFileDialog
@@ -29,6 +33,11 @@ class NativeGraphic(LogicGateGraphic):
             width = max(width, self.widg.columns * 18 + 128)
         elif isinstance(self.widg, LEDBar):
             width = max(width, self.widg.width * 16 + 128)
+        elif isinstance(self.widg, PixelScreen):
+            width = max(width, self.widg.columns * self.widg.pixel_size + 132)
+            height = max(height, self.widg.rows * self.widg.pixel_size + 84)
+        elif isinstance(self.widg, CPU):
+            width = 248
         return QRectF(-width / 2, -height / 2, width, height)
 
     def shape(self):
@@ -97,6 +106,14 @@ class NativeGraphic(LogicGateGraphic):
                        else 'Bit 0: izquierda' if isinstance(self.widg, LEDBar) else 'Bit 0: arriba izquierda')
             self._draw_upright_text(painter, QRectF(rect.left() + 8, top + rows * spacing + 3, rect.width() - 16, 18),
                                     Qt.AlignCenter, tr(caption))
+        elif isinstance(self.widg, PixelScreen):
+            self._paint_pixel_screen(painter, rect)
+        elif isinstance(self.widg, CPU):
+            machine = self.widg.machine
+            text = tr("Error" if machine.fault else "Detenida" if machine.halted else "Lista")
+            self._draw_upright_text(painter, QRectF(-56, -29, 112, 24), Qt.AlignCenter,
+                                    f"PC  {machine.pc:02X}    A  {machine.a:02X}")
+            self._draw_upright_text(painter, QRectF(-56, 2, 112, 24), Qt.AlignCenter, text)
         elif isinstance(self.widg, RGBLED):
             values = self.widg.enter
             channels = []
@@ -190,6 +207,41 @@ class NativeGraphic(LogicGateGraphic):
                                     tr('{v0} bits', v0=width))
         self._paint_selection(painter, rect)
 
+    def _paint_pixel_screen(self, painter, rect):
+        screen = self.widg
+        matrix = isinstance(screen, RGBMatrix)
+        size = screen.pixel_size
+        width, height = screen.columns * size, screen.rows * size
+        if getattr(self, "_frame_revision", -1) != screen.frame_revision:
+            image = QImage(width if matrix else screen.columns, height if matrix else screen.rows,
+                           QImage.Format_RGB32)
+            if matrix:
+                image.fill(QColor("#111923"))
+                frame = QPainter(image)
+                frame.setRenderHint(QPainter.Antialiasing)
+                frame.setPen(Qt.NoPen)
+            for index, value in enumerate(screen.pixels):
+                x, y = index % screen.columns, index // screen.columns
+                color = QColor("#e9b853" if value == "X" else "#303d4b" if matrix else "#080c12")
+                if value not in (0, "X"):
+                    color = QColor.fromRgb(value)
+                if matrix:
+                    frame.setBrush(color)
+                    frame.drawEllipse(QRectF(x * size + 1, y * size + 1, size - 2, size - 2))
+                else:
+                    image.setPixelColor(x, y, color)
+            if matrix:
+                frame.end()
+            self._frame_revision, self._frame_image = screen.frame_revision, image
+        target = QRectF(-width / 2 + 18, -height / 2 + 4, width, height)
+        painter.save()
+        painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
+        painter.drawImage(target, self._frame_image)
+        painter.restore()
+        self._draw_upright_text(painter, QRectF(rect.left() + 12, rect.bottom() - 25,
+                                                rect.width() - 24, 18), Qt.AlignCenter,
+                                f"{screen.columns} × {screen.rows} · {size} px")
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and isinstance(self.widg, (DIPSwitch, HexKeyboard)):
             p = event.pos()
@@ -213,9 +265,28 @@ class NativeGraphic(LogicGateGraphic):
                 return
         super().mousePressEvent(event)
 
+    def context_menu(self):
+        menu = super().context_menu()
+        if isinstance(self.widg, RAM) and not isinstance(self.widg, ProgramROM):
+            menu.addAction(tr("Programar memoria…"), self.program_memory)
+        return menu
+
+    def program_memory(self):
+        ArchitectureEditor(self).exec()
+
     def show_config(self):
         if isinstance(self.widg, LEDMatrix):
             MatrixDialog(self).exec()
+        elif isinstance(self.widg, PixelScreen):
+            PixelScreenDialog(self).exec()
+        elif isinstance(self.widg, ProgramROM):
+            ProgramEditor(self).exec()
+        elif isinstance(self.widg, CPU):
+            machine = self.widg.machine
+            QMessageBox.information(self.scene().views()[0].window(), tr(self.widg.title),
+                                    tr("PC: 0x{v0:02X} · A: 0x{v1:02X}", v0=machine.pc, v1=machine.a)
+                                    + "\n\n" + (machine.fault or tr(
+                                        "Conecta PC a ADDR de la ROM y Q a INST. Cada flanco ascendente de CLK ejecuta una instrucción. RESET reinicia la CPU.")))
         elif isinstance(self.widg, Native):
             NativeDialog(self).exec()
         else:
@@ -264,6 +335,46 @@ class MatrixDialog(QDialog):
         view = self.graphic.scene().views()[0]
         view.rebuild_connections(recalculate=True)
         view.window()._schedule_history_capture()
+        self.accept()
+
+
+class PixelScreenDialog(QDialog):
+    def __init__(self, graphic):
+        super().__init__(graphic.scene().views()[0].window())
+        self.graphic = graphic
+        screen = graphic.widg
+        self.setWindowTitle(tr(screen.title))
+        layout = QVBoxLayout(self)
+        form = QFormLayout()
+        self.fields = []
+        for label, minimum, maximum, value in (
+                ("Filas", 1, screen.max_side, screen.rows),
+                ("Columnas", 1, screen.max_side, screen.columns),
+                ("Tamaño de píxel", screen.min_pixel_size, screen.max_pixel_size, screen.pixel_size)):
+            field = QSpinBox()
+            field.setRange(minimum, maximum)
+            field.setValue(value)
+            form.addRow(tr(label), field)
+            self.fields.append(field)
+        layout.addLayout(form)
+        help_text = QLabel(tr("X e Y empiezan en 0. Cada flanco ascendente de CLK escribe el color 0xRRGGBB. CLR borra la pantalla."))
+        help_text.setWordWrap(True)
+        layout.addWidget(help_text)
+        self.clear = QCheckBox(tr("Borrar los píxeles al guardar"))
+        layout.addWidget(self.clear)
+        buttons = QHBoxLayout()
+        save, cancel = QPushButton(tr("Guardar")), QPushButton(tr("Cancelar"))
+        save.clicked.connect(self.save)
+        cancel.clicked.connect(self.reject)
+        buttons.addWidget(save)
+        buttons.addWidget(cancel)
+        layout.addLayout(buttons)
+        self.setMinimumWidth(370)
+
+    def save(self):
+        self.graphic.widg.configure_screen(*(field.value() for field in self.fields),
+                                          clear=self.clear.isChecked())
+        self.parentWidget()._schedule_history_capture()
         self.accept()
 
 
@@ -346,7 +457,8 @@ class NativeDialog(QDialog):
                 data['native_value'] = value
             if self.memory:
                 tokens = self.memory.toPlainText().replace(',', ' ').split()
-                values = ['X' if token.upper() == 'X' else int(token, 16 if token.lower().startswith('0x') else 10) for token in tokens]
+                values = ['X' if token.upper() == 'X' else int(
+                    token, 0 if token.lower().startswith(('0x', '0b')) else 10) for token in tokens]
                 if len(values) > 1 << settings['address_bits']:
                     raise ValueError(tr('Hay más palabras que direcciones disponibles.'))
                 if any(v != 'X' and not 0 <= v < (1 << settings['width']) for v in values):
