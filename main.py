@@ -28,7 +28,7 @@ from resources import get_app_icon, APP_VERSION
 
 import widgets.widgets as wdg
 import widgets.graphics as gra
-from widgets.native import COMPONENTS, Native, LEDMatrix
+from widgets.native import COMPONENTS, CPU, Native, LEDMatrix
 from widgets.native_graphics import NativeGraphic
 from widgets.graphics import Port, Wire, Junction, WireEndpoint
 from project_io import (dump_project, module_definition, prepare_project, write_json_atomic,
@@ -872,9 +872,9 @@ class VentanaInicial(QMainWindow):
         for title, label, kinds in (
                 ("Aritmética y selección", "Aritmética",
                  ("SUMADOR", "SUMA_RESTA", "COMPARADOR", "ALU", "MUX", "DEMUX", "DECODIFICADOR", "BCD7")),
-                ("Memoria y registros", "Memoria", ("RAM", "ROM", "CONTADOR", "REG_DESPLAZAMIENTO")),
+                ("Memoria y registros", "Memoria", ("RAM", "ROM", "CONTADOR", "REG_DESPLAZAMIENTO", "CPU8", "PROGRAM_ROM")),
                 ("Entradas y salidas", "E/S",
-                 ("DIP", "TECLADO_HEX", "CONSTANTE", "PULL_UP", "PULL_DOWN", "LED_BAR", "DISPLAY_NUMERICO", "LED_MATRIX", "LED_RGB", "SEMAFORO", "SONIDO"))):
+                 ("DIP", "TECLADO_HEX", "CONSTANTE", "PULL_UP", "PULL_DOWN", "LED_BAR", "DISPLAY_NUMERICO", "LED_MATRIX", "LED_RGB", "RGB_MATRIX", "PIXEL_SCREEN", "SEMAFORO", "SONIDO"))):
             page = QWidget(self.ui.tabWidget)
             layout = QVBoxLayout(page)
             layout.setContentsMargins(10, 10, 10, 10)
@@ -934,7 +934,7 @@ class VentanaInicial(QMainWindow):
                 new_widg.enter = new_widg.default_input_values()
                 if not new_widg.sequential:
                     new_widg.logic()
-                else:
+                elif not isinstance(new_widg, CPU) and new_widg.exit:
                     new_widg.exit[0] = new_widg.value if not new_widg.configurable_address else 0
             elif issubclass(cls_widg, (wdg.BusInput, wdg.BusLamp, wdg.BusViewer, wdg.Splitter,
                                      wdg.Combiner, wdg.TriState)):
@@ -1085,7 +1085,6 @@ class VentanaInicial(QMainWindow):
         self.actionDuplicar.triggered.connect(self.duplicar)
         self.ui.actionSobre_Nosotros.triggered.connect(self.about)
         self.ui.actionSobre_Nosotros_2.triggered.connect(self.about)
-        self.ui.actionTutorial.triggered.connect(self.tutorial)
         self.ui.actionGuardar_CI.triggered.connect(self.crear_modulo)
         self.ui.actionCargar_CI.triggered.connect(self.cargar_modulo)
         self.ui.menuWidgets.removeAction(self.ui.actionCrear_Seccion)
@@ -1111,11 +1110,11 @@ class VentanaInicial(QMainWindow):
         self.ui.menuAyuda.addAction(self.actionUpdateNotifications)
         self.actionDeshacer = QAction(tr("Deshacer"), self)
         self.actionDeshacer.setShortcut("Ctrl+Z")
-        self.actionDeshacer.setShortcutContext(Qt.ShortcutContext.ApplicationShortcut)
+        self.actionDeshacer.setShortcutContext(Qt.ShortcutContext.WindowShortcut)
         self.actionDeshacer.triggered.connect(self.deshacer)
         self.actionRehacer = QAction(tr("Rehacer"), self)
         self.actionRehacer.setShortcut("Ctrl+Y")
-        self.actionRehacer.setShortcutContext(Qt.ShortcutContext.ApplicationShortcut)
+        self.actionRehacer.setShortcutContext(Qt.ShortcutContext.WindowShortcut)
         self.actionRehacer.triggered.connect(self.rehacer)
         self.ui.menuEditar.insertAction(self.ui.menuEditar.actions()[0]
                                         if self.ui.menuEditar.actions() else None,
@@ -1539,7 +1538,7 @@ class VentanaInicial(QMainWindow):
         translations = getattr(self, "language_translations", {})
         translated = translations.get(
             "DaLogic — Sin título", "DaLogic — Sin título")
-        if self.project_path is None:
+        if self.project_path is None and self.project_name == "Sin título":
             return translated
         prefix = translations.get("DaLogic — ", "DaLogic — ")
         return f"{prefix}{self.project_name}"
@@ -3688,15 +3687,6 @@ class VentanaInicial(QMainWindow):
     def about(self):
         self.creditos_window = VentanaCreditos(self.Credit_Form, self)
         self.creditos_window.exec()
-    def tutorial(self):
-        QMessageBox.information(self, tr("Guía rápida"),
-            tr("Elige un componente a la izquierda y haz clic en el tablero para colocarlo, o arrástralo hasta su posición. "
-            "Esc o clic derecho cancela; Enter lo coloca en el centro visible. Haz clic en un puerto y después en otro para cablearlos.\n\n"
-            "Un clic en vacío añade un codo; doble clic termina el cable con un extremo libre. Usa la rueda para zoom, "
-            "la rueda central para desplazarte, Supr para borrar y doble clic sobre un interruptor para cambiarlo.\n\n"
-            "RETARDO retrasa una señal; usa Editar para configurar el tiempo y el retraso de cálculo. Usa Ver para cambiar el tema o ajustar la vista.\n\n"
-            "Selecciona un grupo y usa Widgets → Crear CI para convertirlo en un módulo reutilizable."))
-
     def mostrar_manual(self):
         dialog = QDialog(self)
         dialog.setWindowTitle(tr("Manual de DaLogic"))

@@ -1,6 +1,8 @@
 from resources import translate_text as tr
 """Native components. Ports are listed in their visible order, bit 0 first."""
 from .widgets import Widget, BusInput, BusLamp, LOGIC_X, LOGIC_Z
+from .processor import Processor, PROGRAM_SIZE, WORD_BITS
+from .custom_isa import MAX_ISA, MAX_SOURCE
 
 
 SEGMENTS = (0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07,
@@ -195,6 +197,39 @@ class RAM(Native):
     sequential = True
     configurable_address = True
 
+    def __init__(self, id, width=8, address_bits=4, channels=4):
+        super().__init__(id, width, address_bits, channels)
+        self.program_definition = None
+
+    @staticmethod
+    def _program_definition(data):
+        if data is None:
+            return None
+        if (not isinstance(data, dict) or data.get("mode") not in ("asm", "bin")
+                or not isinstance(data.get("isa"), str) or len(data["isa"]) > MAX_ISA
+                or not isinstance(data.get("source"), str) or len(data["source"]) > MAX_SOURCE):
+            raise ValueError(tr("Programa no válido."))
+        return {key: data[key] for key in ("mode", "isa", "source")}
+
+    def load_image(self, words, definition):
+        capacity = 1 << self.address_bits
+        if len(words) > capacity or any(type(word) is not int or not 0 <= word <= self.mask for word in words):
+            raise ValueError(tr("Programa no válido."))
+        metadata = self._program_definition(definition)
+        self.memory = list(words) + [0] * (capacity - len(words))
+        self.program_definition = metadata
+        self._simulation_initialized = False
+
+    def export_native(self):
+        data = super().export_native()
+        if self.program_definition is not None:
+            data["program_definition"] = dict(self.program_definition)
+        return data
+
+    def restore_native(self, data):
+        super().restore_native(data)
+        self.program_definition = self._program_definition(data.get("program_definition"))
+
     def layout(self):
         return [("ADDR", self.address_bits), ("D", self.width), ("WE", 1), ("CLK", 1)], [("Q", self.width)]
 
@@ -218,6 +253,79 @@ class ROM(RAM):
 
     def logic(self):
         self.exit[0] = self.memory[int(self.enter[0]) & (len(self.memory) - 1)] if self.known(0) else LOGIC_X
+
+
+class ProgramROM(ROM):
+    title = "ROM de programa"
+    configurable_width = False
+
+    def __init__(self, id, **kwargs):
+        super().__init__(id, width=WORD_BITS, address_bits=8)
+        self.program_mode = "asm"
+        self.program_source = ""
+        self.program_length = 0
+
+    def load_program(self, words, source, mode):
+        if (mode not in ("asm", "bin") or not isinstance(source, str) or len(source) > 65536
+                or len(words) > PROGRAM_SIZE
+                or any(type(word) is not int or not 0 <= word <= self.mask for word in words)):
+            raise ValueError(tr("Programa no válido."))
+        self.program_mode, self.program_source, self.program_length = mode, source, len(words)
+        self.memory = list(words) + [0] * (PROGRAM_SIZE - len(words))
+
+    def export_native(self):
+        return {**super().export_native(), "program_mode": self.program_mode,
+                "program_source": self.program_source, "program_length": self.program_length}
+
+    def restore_native(self, data):
+        super().restore_native(data)
+        length = data.get("program_length", len(data.get("memory", [])))
+        if type(length) is not int or not 0 <= length <= PROGRAM_SIZE:
+            raise ValueError(tr("Programa no válido."))
+        self.load_program(self.memory[:length], data.get("program_source", ""),
+                          data.get("program_mode", "bin"))
+
+
+class CPU(Native):
+    title = "CPU DaLogic-8"
+    configurable_width = False
+    sequential = True
+
+    def __init__(self, id, **kwargs):
+        super().__init__(id, width=8)
+        self.machine = Processor()
+        self.sync_outputs()
+
+    def layout(self):
+        return ([("CLK", 1), ("RESET", 1), ("INST", WORD_BITS), ("IN", 8)],
+                [("PC", 8), ("A", 8), ("X", 6), ("Y", 6), ("RGB", 24), ("PLOT", 1), ("HALT", 1)])
+
+    def sync_outputs(self):
+        machine = self.machine
+        x, y, red, green, blue = machine.video
+        self.exit[:] = [machine.pc, machine.a, x & 63, y & 63,
+                        (red << 16) | (green << 8) | blue, machine.plot, machine.halted]
+
+    def logic(self):
+        previous = self.previous_clock
+        rising = self.rising(0)
+        if self.enter[1] == 1:
+            self.machine.reset()
+        elif not getattr(self, "_prime_clock", False):
+            if rising:
+                self.machine.step(self.enter[2], self.enter[3])
+            elif previous == 1 and self.enter[0] == 0:
+                self.machine.finish_cycle()
+        self.sync_outputs()
+
+    def export_native(self):
+        return {**super().export_native(), "processor_state": self.machine.snapshot()}
+
+    def restore_native(self, data):
+        super().restore_native(data)
+        if "processor_state" in data:
+            self.machine.restore(data["processor_state"])
+        self.sync_outputs()
 
 
 class Counter(Native):
@@ -380,6 +488,80 @@ class RGBLED(Native):
         pass
 
 
+class PixelScreen(Native):
+    title = "Pantalla de píxeles"
+    configurable_width = False
+    sequential = True
+    default_geometry = (16, 16, 12)
+    max_side = 64
+    min_pixel_size = 4
+    max_pixel_size = 32
+
+    def __init__(self, id, **kwargs):
+        super().__init__(id, width=24)
+        self.rows, self.columns, self.pixel_size = self.default_geometry
+        self.pixels = [0] * (self.rows * self.columns)
+        self.frame_revision = 0
+
+    def layout(self):
+        return [("X", 6), ("Y", 6), ("RGB", 24), ("CLK", 1), ("CLR", 1)], []
+
+    def configure_screen(self, rows, columns, pixel_size, clear=False):
+        if (any(type(value) is not int for value in (rows, columns, pixel_size))
+                or not 1 <= rows <= self.max_side or not 1 <= columns <= self.max_side
+                or not self.min_pixel_size <= pixel_size <= self.max_pixel_size):
+            raise ValueError(tr("Dimensiones de pantalla no válidas."))
+        if self.graphic:
+            self.graphic.prepareGeometryChange()
+        resized = [0] * (rows * columns)
+        if not clear:
+            overlap = min(columns, self.columns)
+            for row in range(min(rows, self.rows)):
+                resized[row * columns:row * columns + overlap] = self.pixels[
+                    row * self.columns:row * self.columns + overlap]
+        self.rows, self.columns, self.pixel_size = rows, columns, pixel_size
+        self.pixels = resized
+        self.frame_revision += 1
+        if self.graphic:
+            self.graphic._reposition_ports()
+            self.graphic.update()
+
+    def logic(self):
+        edge = self.rising(3)
+        if self.enter[4] == 1:
+            if any(self.pixels):
+                self.pixels[:] = [0] * len(self.pixels)
+                self.frame_revision += 1
+        elif edge and self.known(0, 1):
+            x, y = map(int, self.enter[:2])
+            if 0 <= x < self.columns and 0 <= y < self.rows:
+                index = y * self.columns + x
+                color = int(self.enter[2]) & self.mask if self.known(2, 4) else LOGIC_X
+                if color != self.pixels[index]:
+                    self.pixels[index] = color
+                    self.frame_revision += 1
+
+    def export_native(self):
+        return {**super().export_native(), "pixel_rows": self.rows, "pixel_columns": self.columns,
+                "pixel_size": self.pixel_size, "pixels": list(self.pixels)}
+
+    def restore_native(self, data):
+        super().restore_native(data)
+        self.configure_screen(data.get("pixel_rows", self.rows), data.get("pixel_columns", self.columns),
+                              data.get("pixel_size", self.pixel_size), clear=True)
+        pixels = data.get("pixels", self.pixels)
+        if (not isinstance(pixels, list) or len(pixels) != len(self.pixels)
+                or any(value != LOGIC_X and (type(value) is not int or not 0 <= value <= self.mask)
+                       for value in pixels)):
+            raise ValueError(tr("Contenido de pantalla no válido."))
+        self.pixels = list(pixels)
+
+
+class RGBMatrix(PixelScreen):
+    title = "Matriz RGB"
+    default_geometry = (8, 8, 14)
+
+
 class TrafficLight(Native):
     title = "Semáforo"
     configurable_width = False
@@ -437,5 +619,6 @@ COMPONENTS = {
     "DIP": DIPSwitch, "TECLADO_HEX": HexKeyboard, "CONSTANTE": Constant,
     "PULL_UP": PullUp, "PULL_DOWN": PullDown, "LED_BAR": LEDBar,
     "DISPLAY_NUMERICO": NumericDisplay, "LED_MATRIX": LEDMatrix,
-    "LED_RGB": RGBLED, "SEMAFORO": TrafficLight, "SONIDO": Buzzer,
+    "LED_RGB": RGBLED, "RGB_MATRIX": RGBMatrix, "PIXEL_SCREEN": PixelScreen,
+    "CPU8": CPU, "PROGRAM_ROM": ProgramROM, "SEMAFORO": TrafficLight, "SONIDO": Buzzer,
 }
